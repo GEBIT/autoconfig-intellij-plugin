@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="de.gebit.intellij.autoconfig">
+        <configurationUpdater implementation="de.gebit.intellij.autoconfig.handlers.git.GitHandler"/>
+    </extensions>
+</idea-plugin>

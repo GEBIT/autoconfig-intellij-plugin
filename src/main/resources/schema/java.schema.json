@@ -1,0 +1,32 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/java.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Java configuration",
+  "type": "object",
+  "properties": {
+    "compiler": {
+      "type": "object",
+      "description": "Compiler settings",
+      "properties": {
+        "javaCompiler": {
+          "description": "Compiler setting",
+          "enum": [
+            "Javac",
+            "Eclipse",
+            "Groovy-Eclipse"
+          ]
+        },
+        "annotationProcessor": {
+          "type": "object",
+          "description": "Annotation processor settings",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "description": "Enable or disable annotation processing"
+            }
+          }
+        }
+      }
+    }
+  }
+}

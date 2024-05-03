@@ -1,0 +1,14 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/git.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Git configuration",
+  "type": "object",
+  "properties": {
+    "updateMethod": {
+      "enum": [
+        "Merge",
+        "Rebase"
+      ]
+    }
+  }
+}

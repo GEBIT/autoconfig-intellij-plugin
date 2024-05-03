@@ -1,0 +1,50 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "General configuration",
+  "type": "object",
+  "properties": {
+    "onSave": {
+      "type": "object",
+      "description": "Actions on save settings.",
+      "properties": {
+        "format": {
+          "type": "boolean",
+          "description": "Whether source code formatting is enabled."
+        },
+        "optimizeImports": {
+          "type": "boolean",
+          "description": "Whether import optimization is enabled."
+        }
+      }
+    },
+    "issueNavigation": {
+      "type": "array",
+      "description": "Jira links (can also be configured using .idea/vcs.xml).",
+      "items": {
+        "type": "object",
+        "required": [
+          "expression",
+          "url"
+        ],
+        "properties": {
+          "expression": {
+            "type": "string",
+            "description": "Regular expression used to detect issue tags in commit messages."
+          },
+          "url": {
+            "type": "string",
+            "description": "Jira URL to use with extracted issue tag."
+          }
+        }
+      }
+    },
+    "pluginRepositories": {
+      "type": "array",
+      "description": "List of additional plugin repositories.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

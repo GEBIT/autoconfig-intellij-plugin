@@ -1,0 +1,45 @@
+<idea-plugin url="https://gitlab.local.gebit.de/intellij/trend-tools">
+    <id>de.gebit.intellij.autoconfig</id>
+    <name>Configuration updater plugin for IntelliJ</name>
+    <vendor email="info@gebit.de" url="https://www.gebit.de">GEBIT Solutions GmbH</vendor>
+
+    <description><![CDATA[<em>Change this by patchPluginXml gradle task</em>]]></description>
+    <change-notes><![CDATA[<em>Change this by patchPluginXml gradle task</em>]]></change-notes>
+    <version>0.0.0</version>
+    <idea-version since-build="231.1"/>
+    <vendor url="https://github.com/GEBIT/autoconfig-intellij-plugin"
+            email="info@gebit.de">GEBIT Solutions GmbH</vendor>
+    <description><![CDATA[
+        TODO: HTML text describing the autoconfig plugin functionality.
+        ]]>
+    </description>
+    <change-notes>
+        <![CDATA[
+        <html lang="EN"><body><ul>
+            <li>initial plugin version</li>
+        </ul></body></html>
+        ]]>
+    </change-notes>
+
+    <depends>com.intellij.modules.json</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends optional="true" config-file="plugin-git.xml">Git4Idea</depends>
+    <depends optional="true" config-file="plugin-maven.xml">org.jetbrains.idea.maven</depends>
+    <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
+
+    <extensionPoints>
+        <extensionPoint name="configurationUpdater" interface="de.gebit.intellij.autoconfig.UpdateHandler" dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="de.gebit.intellij.autoconfig.AutoconfigStartup"/>
+        <notificationGroup displayType="BALLOON" id="Autoconfig"/>
+        <formatOnSaveOptions.defaultsProvider implementation="de.gebit.intellij.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
+    </extensions>
+    <extensions defaultExtensionNs="JavaScript.JsonSchema">
+        <ProviderFactory implementation="de.gebit.intellij.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
+    </extensions>
+    <extensions defaultExtensionNs="de.gebit.intellij.autoconfig">
+        <configurationUpdater implementation="de.gebit.intellij.autoconfig.handlers.CommonConfigurationHandler"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,67 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/maven.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Maven configuration",
+  "type": "object",
+  "properties": {
+    "threads": {
+      "type": "string",
+      "description": "Thread parameter for -T command line option, e.g. 2C",
+      "examples": [
+        "2C"
+      ]
+    },
+    "settingsFile": {
+      "type": "string",
+      "description": "Path to settings.xml file, e.g. $PROJECT_DIR$/development/settings.xml"
+    },
+    "useMavenWrapper": {
+      "type": "boolean",
+      "description": "Whether to use maven wrapper to fetch a given maven version (combine with .mvn/wrapper/maven-wrapper.properties file)"
+    },
+    "useMavenConfig": {
+      "type": "boolean",
+      "description": "Whether a .mvn/maven.config file is in use."
+    },
+    "importing": {
+      "type": "object",
+      "description": "Maven importing settings.",
+      "properties": {
+        "detectCompiler": {
+          "type": "boolean",
+          "description": "Whether the compiler should be detected from maven project (which may cause problems when using Eclipse compiler)."
+        },
+        "downloadSources": {
+          "type": "boolean",
+          "description": "Whether sources of dependencies should be downloaded automatically (required for TREND projects!)."
+        },
+        "downloadDocumentation": {
+          "type": "boolean",
+          "description": "Whether documentation for dependencies should be downloaded automatically."
+        },
+        "vmOptions": {
+          "type": "string",
+          "description": "The VM options to use during maven import."
+        },
+        "jdk": {
+          "type": "string",
+          "description": "The JDK (name) to use for importing, e.g. 17."
+        }
+      }
+    },
+    "runner": {
+      "type": "object",
+      "description": "The maven runner settings.",
+      "properties": {
+        "vmOptions": {
+          "type": "string",
+          "description": "The VM options to use for maven runner."
+        },
+        "jre": {
+          "type": "string",
+          "description": "The JRE (name) to use for importing, e.g. 17."
+        }
+      }
+    }
+  }
+}
