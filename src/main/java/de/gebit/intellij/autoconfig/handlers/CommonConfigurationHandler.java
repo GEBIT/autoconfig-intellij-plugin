@@ -9,6 +9,7 @@
 package de.gebit.intellij.autoconfig.handlers;
 
 import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptions;
+import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptionsBase;
 import com.intellij.codeInsight.actions.onSave.OptimizeImportsOnSaveOptions;
 import com.intellij.externalDependencies.ExternalDependenciesManager;
 import com.intellij.externalDependencies.impl.ExternalDependenciesManagerImpl;
@@ -17,12 +18,16 @@ import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.vcs.IssueNavigationConfiguration;
 import com.intellij.openapi.vcs.IssueNavigationLink;
 import de.gebit.intellij.autoconfig.UpdateHandler;
+import de.gebit.intellij.autoconfig.model.Formatting;
 import de.gebit.intellij.autoconfig.model.GeneralConfiguration;
 import de.gebit.intellij.autoconfig.model.IssueNavigation;
 import de.gebit.intellij.autoconfig.model.OnSave;
+import de.gebit.intellij.autoconfig.state.TransientPluginStateService;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,14 +81,28 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 
 	private void applyOnSaveOptions(OnSave options, Project project, List<String> updatedConfigs) {
 		if (options != null) {
-			FormatOnSaveOptions instance = FormatOnSaveOptions.getInstance(project);
-			applySetting(options.getFormat(), instance.isRunOnSaveEnabled(), instance::setRunOnSaveEnabled, updatedConfigs, "Code format on save");
-			OptimizeImportsOnSaveOptions imports = OptimizeImportsOnSaveOptions.getInstance(project);
-			applySetting(options.getOptimizeImports(), imports.isRunOnSaveEnabled(), imports::setRunOnSaveEnabled, updatedConfigs, "Optimize imports on save");
+			// first, initialise the application state service used for code formatter options
+			Formatting optionsFormat = options.getFormat();
+			Formatting optionsOptimizeImports = options.getOptimizeImports();
+			TransientPluginStateService.getInstance().initFormatterSettings(getFileTypes(optionsFormat), getFileTypes(optionsOptimizeImports));
+
+			setFormattingOptions(updatedConfigs, optionsFormat, "Code format on save", FormatOnSaveOptions.getInstance(project));
+			setFormattingOptions(updatedConfigs, optionsOptimizeImports, "Optimize imports on save", OptimizeImportsOnSaveOptions.getInstance(project));
 		}
 	}
 
-	void applyPluginHosts(List<String> pluginHosts, Project aProject, List<String> changedConfigs) {
+	private void setFormattingOptions(List<String> updatedConfigs, Formatting optionsFormat, String description, FormatOnSaveOptionsBase<?> format) {
+		applySetting(optionsFormat != null, format.isRunOnSaveEnabled(), format::setRunOnSaveEnabled, updatedConfigs, description);
+	}
+
+	private List<String> getFileTypes(@Nullable Formatting formattingOptions) {
+		if (formattingOptions == null) {
+			return Collections.emptyList();
+		}
+		return formattingOptions.getTypes();
+	}
+
+	private void applyPluginHosts(List<String> pluginHosts, Project aProject, List<String> changedConfigs) {
 		if (pluginHosts != null) {
 			var updateSettings = UpdateSettings.getInstance();
 			var storedPluginHosts = updateSettings.getStoredPluginHosts();

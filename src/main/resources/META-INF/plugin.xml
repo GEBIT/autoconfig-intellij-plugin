@@ -1,14 +1,12 @@
 <idea-plugin url="https://gitlab.local.gebit.de/intellij/trend-tools">
     <id>de.gebit.intellij.autoconfig</id>
-    <name>Configuration updater plugin for IntelliJ</name>
+    <name>Autoconfig</name>
     <vendor email="info@gebit.de" url="https://www.gebit.de">GEBIT Solutions GmbH</vendor>
 
-    <description><![CDATA[<em>Change this by patchPluginXml gradle task</em>]]></description>
-    <change-notes><![CDATA[<em>Change this by patchPluginXml gradle task</em>]]></change-notes>
     <version>0.0.0</version>
     <idea-version since-build="231.1"/>
     <vendor url="https://github.com/GEBIT/autoconfig-intellij-plugin"
-            email="info@gebit.de">GEBIT Solutions GmbH</vendor>
+            email="jetbrains@gebit.de">GEBIT Solutions GmbH</vendor>
     <description><![CDATA[
         TODO: HTML text describing the autoconfig plugin functionality.
         ]]>

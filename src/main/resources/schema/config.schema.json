@@ -2,20 +2,29 @@
   "$id": "https://www.gebit.de/autoconfig-intellij-plugin/config.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "General configuration",
+  "definitions": {
+    "formatting": {
+      "type": "object",
+      "description": "Formatting settings",
+      "properties": {
+        "types": {
+          "type": "array",
+          "description": "File types that should be activated",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
   "type": "object",
   "properties": {
     "onSave": {
       "type": "object",
       "description": "Actions on save settings.",
       "properties": {
-        "format": {
-          "type": "boolean",
-          "description": "Whether source code formatting is enabled."
-        },
-        "optimizeImports": {
-          "type": "boolean",
-          "description": "Whether import optimization is enabled."
-        }
+        "format": { "$ref": "#/definitions/formatting" },
+        "optimizeImports": { "$ref": "#/definitions/formatting" }
       }
     },
     "issueNavigation": {

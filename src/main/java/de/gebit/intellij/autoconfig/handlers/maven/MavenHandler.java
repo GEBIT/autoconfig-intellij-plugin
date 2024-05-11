@@ -49,7 +49,6 @@ public class MavenHandler extends AbstractHandler implements UpdateHandler<Maven
 	}
 
 	@Override
-	@SuppressWarnings("java:S5738")
 	public List<String> updateConfiguration(MavenConfiguration maven, Project project) {
 		List<String> changedConfigs = new ArrayList<>();
 		var mavenProject = MavenProjectsManager.getInstance(project);

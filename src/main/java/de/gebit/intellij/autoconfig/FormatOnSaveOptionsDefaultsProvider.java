@@ -10,47 +10,36 @@ package de.gebit.intellij.autoconfig;
 
 import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptionsBase;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.FileTypeRegistry;
-import com.intellij.openapi.fileTypes.UnknownFileType;
+import de.gebit.intellij.autoconfig.state.TransientPluginState;
+import de.gebit.intellij.autoconfig.state.TransientPluginStateService;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * Supplier for default file formats that should be formatted or used for optimization of imports.
  */
 public class FormatOnSaveOptionsDefaultsProvider implements FormatOnSaveOptionsBase.DefaultsProvider {
 
-	/**
-	 * List of file types used as defaults.
-	 */
-	private static Collection<FileType> fileTypes;
-
 	@Override
 	public @NotNull Collection<@NotNull FileType> getFileTypesFormattedOnSaveByDefault() {
-		return getFileTypes();
+		return getFileTypes(TransientPluginState::formatFileTypes);
 	}
 
 	@Override
 	public @NotNull Collection<@NotNull FileType> getFileTypesWithOptimizeImportsOnSaveByDefault() {
-		return getFileTypes();
+		return getFileTypes(TransientPluginState::organizeImportFileTypes);
 	}
 
 	@NotNull
-	private static Collection<FileType> getFileTypes() {
-		if (fileTypes != null) {
-			return fileTypes;
+	private static Collection<FileType> getFileTypes(Function<TransientPluginState, Collection<FileType>> getterMethod) {
+		TransientPluginState pluginState = TransientPluginStateService.getInstance().getPluginState();
+		if (pluginState == null) {
+			return Collections.emptyList();
 		}
 
-		fileTypes = new ArrayList<>();
-
-		for (String type : new String[]{"java", "dart", "groovy", "kt"}) {
-			FileType fileTypeByExtension = FileTypeRegistry.getInstance().getFileTypeByExtension(type);
-			if (!(fileTypeByExtension instanceof UnknownFileType)) {
-				fileTypes.add(fileTypeByExtension);
-			}
-		}
-		return fileTypes;
+		return getterMethod.apply(pluginState);
 	}
 }
