@@ -24,35 +24,35 @@ import java.util.Optional;
 import static de.gebit.intellij.autoconfig.util.Notifications.showInfo;
 
 /**
- * Entry point for the opening of a project. The yaml configuration file is read here, the resulting configuration options object is passed to the CommonConfigurationHandler.
- * At the end, a message is composed, displaying a list of all updated configuration options.
+ * Entry point for the opening of a project. The yaml configuration file is read here, the resulting configuration options object is passed to the
+ * CommonConfigurationHandler. At the end, a message is composed, displaying a list of all updated configuration options.
  */
 public class AutoconfigStartup implements ProjectActivity {
-    private static final com.intellij.openapi.diagnostic.Logger LOG = Logger.getInstance(AutoconfigStartup.class);
+	private static final com.intellij.openapi.diagnostic.Logger LOG = Logger.getInstance(AutoconfigStartup.class);
 
-    public static final ExtensionPointName<UpdateHandler<?>>
-            EP_NAME = ExtensionPointName.create("de.gebit.intellij.autoconfig.configurationUpdater");
+	public static final ExtensionPointName<UpdateHandler<?>>
+			EP_NAME = ExtensionPointName.create("de.gebit.intellij.autoconfig.configurationUpdater");
 
-    @Nullable
-    @Override
-    public Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
-        ConfigurationLoaderService projectService = project.getService(ConfigurationLoaderService.class);
-        if (projectService == null) {
-            return null;
-        }
+	@Nullable
+	@Override
+	public Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
+		ConfigurationLoaderService projectService = project.getService(ConfigurationLoaderService.class);
+		if (projectService == null) {
+			return null;
+		}
 
-        List<String> changedConfigs = new ArrayList<>();
+		List<String> changedConfigs = new ArrayList<>();
 
-        for (UpdateHandler updateHandler : EP_NAME.getExtensionList()) {
-            Optional<Object> extensionConfiguration = projectService.getConfiguration(updateHandler.getConfigurationClass(), updateHandler.getFileName());
-            extensionConfiguration.ifPresentOrElse(config -> changedConfigs.addAll(updateHandler.updateConfiguration(config, project)), () -> LOG.info("No configuration for " + updateHandler.getUpdaterName() + " found."));
-        }
+		for (UpdateHandler updateHandler : EP_NAME.getExtensionList()) {
+			Optional<Object> extensionConfiguration = projectService.getConfiguration(updateHandler.getConfigurationClass(), updateHandler.getFileName());
+			extensionConfiguration.ifPresentOrElse(config -> changedConfigs.addAll(updateHandler.updateConfiguration(config, project)), () -> LOG.info("No configuration for " + updateHandler.getUpdaterName() + " found."));
+		}
 
-        if (!changedConfigs.isEmpty()) {
-            String notification = String.join(", ", changedConfigs);
-            showInfo("New project configurations applied: " + notification, project);
-        }
+		if (!changedConfigs.isEmpty()) {
+			String notification = String.join(", ", changedConfigs);
+			showInfo("New project configurations applied: " + notification, project);
+		}
 
-        return changedConfigs;
-    }
+		return changedConfigs;
+	}
 }

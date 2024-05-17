@@ -38,6 +38,7 @@ public final class ConfigurationLoaderService {
 		T configObject = null;
 		Object o = configurationOptions.get(objectClass.getCanonicalName());
 		if (o != null && o.getClass().isAssignableFrom(objectClass)) {
+			//noinspection unchecked
 			configObject = (T) o;
 		}
 		if (configObject != null) {

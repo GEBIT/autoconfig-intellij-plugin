@@ -1,6 +1,6 @@
 plugins {
-	id 'org.jetbrains.intellij' version '1.17.3'
-	id 'java'
+    id 'org.jetbrains.intellij' version '1.17.3'
+    id 'java'
     id "org.jsonschema2pojo" version "1.2.1"
 }
 
@@ -17,33 +17,33 @@ allprojects {
         jUnitJupiterVersion = '5.10.1'
         intellijType = 'IC' // IC: Community Edition, IU: Ultimate Edition.
         intellijVersion = '2024.1' // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-        intellijSinceBuild = '231.1'
+        intellijSinceBuild = '232.1'
     }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 // Must match Groovy version bundled with IntelliJ (see IJ/Contents/lib/groovy.jar/META-INF/org.codehaus.groovy.runtime.ExtensionModule)
 ext.groovyVersion = "3.0.19"
 
 intellij {
-	// Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
-	version = System.getenv().getOrDefault("IJ_VERSION",
-		 "2024.1"
-	)
-	pluginName = "AutoConfigPlugin"
-	downloadSources = true
-	updateSinceUntilBuild = false
-	instrumentCode = false
-	plugins = [
-		"java",
-		"Git4Idea",
-		"junit",
-        "org.jetbrains.plugins.yaml",
-        "org.jetbrains.idea.maven"
-	]
+    // Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
+    version = System.getenv().getOrDefault("IJ_VERSION",
+            "2024.1"
+    )
+    pluginName = "AutoConfigPlugin"
+    downloadSources = true
+    updateSinceUntilBuild = false
+    instrumentCode = false
+    plugins = [
+            "java",
+            "Git4Idea",
+            "junit",
+            "org.jetbrains.plugins.yaml",
+            "org.jetbrains.idea.maven"
+    ]
 }
 buildSearchableOptions.enabled = false // Disable because it takes a long time and the plugin doesn't need it
 runIde.jbrVariant.set("jcef") // JVM with Java Chromium Embedded Framework because why not (see also https://github.com/JetBrains/gradle-intellij-plugin#running-dsl)
@@ -271,18 +271,18 @@ jsonSchema2Pojo {
 }
 
 sourceSets {
-	// Keep Groovy and Kotlin API source code in separate source sets, otherwise
-	// compilation fails because of inter-dependencies between Kotlin and Groovy files which confuse compiler,
-	// even though overall dependencies are unidirectional: pluginApiKotlin -> pluginApiGroovy -> main.
+    // Keep Groovy and Kotlin API source code in separate source sets, otherwise
+    // compilation fails because of inter-dependencies between Kotlin and Groovy files which confuse compiler,
+    // even though overall dependencies are unidirectional: pluginApiKotlin -> pluginApiGroovy -> main.
 
-	main {
-		java { srcDir "src/main" }
-		resources { srcDir "resources" }
-	}
+    main {
+        java { srcDir "src/main" }
+        resources { srcDir "resources" }
+    }
 }
 
 compileJava {
-	sourceCompatibility = "17"
-	targetCompatibility = "17"
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
 }
 

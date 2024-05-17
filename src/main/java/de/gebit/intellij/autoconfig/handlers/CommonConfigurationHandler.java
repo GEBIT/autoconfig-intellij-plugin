@@ -13,15 +13,13 @@ import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptionsBase;
 import com.intellij.codeInsight.actions.onSave.OptimizeImportsOnSaveOptions;
 import com.intellij.externalDependencies.ExternalDependenciesManager;
 import com.intellij.externalDependencies.impl.ExternalDependenciesManagerImpl;
+import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTrackerSettings;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.vcs.IssueNavigationConfiguration;
 import com.intellij.openapi.vcs.IssueNavigationLink;
 import de.gebit.intellij.autoconfig.UpdateHandler;
-import de.gebit.intellij.autoconfig.model.Formatting;
-import de.gebit.intellij.autoconfig.model.GeneralConfiguration;
-import de.gebit.intellij.autoconfig.model.IssueNavigation;
-import de.gebit.intellij.autoconfig.model.OnSave;
+import de.gebit.intellij.autoconfig.model.*;
 import de.gebit.intellij.autoconfig.state.TransientPluginStateService;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +35,8 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 	private static final @NonNls String CONFIG_SCHEMA_JSON = "/schema/config.schema.json";
 
 	public static final @NonNls String CONFIG_FILE_NAME = "autoconfig.yaml";
+
+	public static final @NonNls Class<GeneralConfiguration> CONFIGURATION_CLASS = GeneralConfiguration.class;
 
 	@Override
 	public String getFileName() {
@@ -55,16 +55,32 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 
 	@Override
 	public Class<GeneralConfiguration> getConfigurationClass() {
-		return GeneralConfiguration.class;
+		return CONFIGURATION_CLASS;
 	}
 
 	@Override
 	public List<String> updateConfiguration(GeneralConfiguration options, Project project) {
 		List<String> updatedConfigs = new ArrayList<>();
 		applyIssueNavigationConfiguration(options.getIssueNavigation(), project, updatedConfigs);
-		applyPluginHosts(options.getPluginRepositories(), project, updatedConfigs);
+		applyPluginHosts(options.getGlobalPluginRepositories(), project, updatedConfigs);
 		applyOnSaveOptions(options.getOnSave(), project, updatedConfigs);
+		applyReloadConfiguration(options.getReloadProjectAutomatically(), project, updatedConfigs);
 		return updatedConfigs;
+	}
+
+	private void applyReloadConfiguration(ReloadProjectAutomatically reloadProjectAutomatically, Project project, List<String> updatedConfigs) {
+		if (reloadProjectAutomatically != null) {
+			final ExternalSystemProjectTrackerSettings instance = ExternalSystemProjectTrackerSettings.getInstance(project);
+			if (Boolean.FALSE.equals(reloadProjectAutomatically.getEnabled())) {
+				applySetting(ExternalSystemProjectTrackerSettings.AutoReloadType.NONE, instance.getAutoReloadType(), instance::setAutoReloadType, updatedConfigs, "Automatic project reload deactivated");
+				instance.setAutoReloadType(ExternalSystemProjectTrackerSettings.AutoReloadType.NONE);
+			} else if (reloadProjectAutomatically.getMode() != null) {
+				applySetting(switch (reloadProjectAutomatically.getMode()) {
+					case ANY_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.ALL;
+					case EXTERNAL_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.SELECTIVE;
+				}, instance.getAutoReloadType(), instance::setAutoReloadType, updatedConfigs, "Automatic project reload activated");
+			}
+		}
 	}
 
 	private void applyIssueNavigationConfiguration(List<IssueNavigation> issueNavigationConfig, Project aProject, List<String> updatedConfigs) {
@@ -103,6 +119,7 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 	}
 
 	private void applyPluginHosts(List<String> pluginHosts, Project aProject, List<String> changedConfigs) {
+		// Maybe ask the user before applying new Plugin-Hosts? This could be a possible attack vector otherwise.
 		if (pluginHosts != null) {
 			var updateSettings = UpdateSettings.getInstance();
 			var storedPluginHosts = updateSettings.getStoredPluginHosts();

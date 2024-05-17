@@ -1,6 +1,6 @@
 {
   "$id": "https://www.gebit.de/autoconfig-intellij-plugin/config.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "General configuration",
   "definitions": {
     "formatting": {
@@ -15,6 +15,13 @@
           }
         }
       }
+    },
+    "pluginRepositories": {
+      "type": "array",
+      "description": "List of additional plugin repositories.",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "type": "object",
@@ -23,8 +30,12 @@
       "type": "object",
       "description": "Actions on save settings.",
       "properties": {
-        "format": { "$ref": "#/definitions/formatting" },
-        "optimizeImports": { "$ref": "#/definitions/formatting" }
+        "format": {
+          "$ref": "#/definitions/formatting"
+        },
+        "optimizeImports": {
+          "$ref": "#/definitions/formatting"
+        }
       }
     },
     "issueNavigation": {
@@ -48,11 +59,39 @@
         }
       }
     },
+    "globalPluginRepositories": {
+      "description": "List of plugin repositories to be configured globally (cross project).",
+      "$ref": "#/definitions/pluginRepositories"
+    },
     "pluginRepositories": {
-      "type": "array",
-      "description": "List of additional plugin repositories.",
-      "items": {
-        "type": "string"
+      "description": "List of plugin repositories to be used when this project is open.",
+      "$ref": "#/definitions/pluginRepositories"
+    },
+    "reloadProjectAutomatically": {
+      "type": "object",
+      "description": "Automatically reload the project after the configuration has been changed.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable automatic reload of the project"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Reload on any changes or only reload on external changes e.g. from version control?",
+          "enum": [
+            "any-changes",
+            "external-changes"
+          ],
+          "default": "external-changes",
+          "x-intellij-enum-metadata": {
+            "any-changes": {
+              "description": "Reload on any changes on project configuration files"
+            },
+            "external-changes": {
+              "description": "Reload on external changes on project configuration files e.g. from version control"
+            }
+          }
+        }
       }
     }
   }
