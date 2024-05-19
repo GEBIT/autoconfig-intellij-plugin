@@ -77,7 +77,7 @@
         },
         "mode": {
           "type": "string",
-          "description": "Reload on any changes or only reload on external changes e.g. from version control?",
+          "description": "Reload on any changes or only reload on external changes/from version control?",
           "enum": [
             "any-changes",
             "external-changes"

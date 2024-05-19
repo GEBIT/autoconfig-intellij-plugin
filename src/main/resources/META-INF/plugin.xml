@@ -39,4 +39,10 @@
     <extensions defaultExtensionNs="de.gebit.intellij.autoconfig">
         <configurationUpdater implementation="de.gebit.intellij.autoconfig.handlers.CommonConfigurationHandler"/>
     </extensions>
+    <actions>
+        <group id="AutoConfigGroup" popup="true" text="Autoconfig">
+            <action id="CreateAutoconfigFileAction" class="de.gebit.intellij.autoconfig.create.CreateAutoconfigFileAction" text="Create Autoconfig File" description="Create a new Autoconfig File"/>
+            <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+        </group>
+    </actions>
 </idea-plugin>
