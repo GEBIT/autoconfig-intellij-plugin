@@ -60,11 +60,13 @@ public class CreateAutoconfigFileAction extends CreateInDirectoryActionBase {
 					// we open the file
 					OpenFileAction.openFile(updateHandlerFile, project);
 					Document document = FileDocumentManager.getInstance().getDocument(updateHandlerFile);
-					PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
-					IdeView ideView = e.getData(LangDataKeys.IDE_VIEW);
-					if (psiFile != null && ideView != null) {
-						// and then focus the project/file view on the file
-						ideView.selectElement(psiFile);
+					if (document != null) {
+						PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
+						IdeView ideView = e.getData(LangDataKeys.IDE_VIEW);
+						if (psiFile != null && ideView != null) {
+							// and then focus the project/file view on the file
+							ideView.selectElement(psiFile);
+						}
 					}
 					ActionManager actionManager = ActionManager.getInstance();
 					AnAction codeCompletion = actionManager.getAction("CodeCompletion");

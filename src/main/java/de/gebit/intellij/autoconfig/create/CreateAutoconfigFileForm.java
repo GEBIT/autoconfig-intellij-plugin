@@ -21,7 +21,7 @@ public class CreateAutoconfigFileForm {
 	private JPanel form;
 
 	public CreateAutoconfigFileForm(List<UpdateHandler<?>> handlers) {
-		ComboBoxModel<HandlerComboBoxWrapper> comboBoxModel = new DefaultComboBoxModel<HandlerComboBoxWrapper>(handlers.stream().map(HandlerComboBoxWrapper::new).toArray(HandlerComboBoxWrapper[]::new));
+		ComboBoxModel<HandlerComboBoxWrapper> comboBoxModel = new DefaultComboBoxModel<>(handlers.stream().map(HandlerComboBoxWrapper::new).toArray(HandlerComboBoxWrapper[]::new));
 		handlerSelection.setModel(comboBoxModel);
 	}
 

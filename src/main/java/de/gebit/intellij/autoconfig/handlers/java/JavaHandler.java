@@ -70,6 +70,16 @@ public class JavaHandler extends AbstractHandler implements UpdateHandler<JavaCo
 				ProcessorConfigProfile defaultProcessorProfile = compilerConfiguration.getDefaultProcessorProfile();
 				applySetting(annotationProcessor.getEnable(), defaultProcessorProfile.isEnabled(), defaultProcessorProfile::setEnabled, changedConfigs, "Enable annotation processor");
 			}
+
+			Boolean parallelCompilation = compiler.getParallelCompilation();
+			if (parallelCompilation != null) {
+				applySetting(parallelCompilation, compilerConfiguration.isParallelCompilationEnabled(), compilerConfiguration::setParallelCompilationEnabled, changedConfigs, "Enable parallel compilation");
+			}
+
+			Integer buildProcessHeapSize = compiler.getBuildProcessHeapSize();
+			if (buildProcessHeapSize != null) {
+				applySetting(buildProcessHeapSize, compilerConfiguration.getBuildProcessHeapSize(0), compilerConfiguration::setBuildProcessHeapSize, changedConfigs, "Build process heap size");
+			}
 		}
 		return changedConfigs;
 	}

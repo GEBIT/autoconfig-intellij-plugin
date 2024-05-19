@@ -25,6 +25,14 @@
               "description": "Enable or disable annotation processing"
             }
           }
+        },
+        "parallelCompilation": {
+          "type": "boolean",
+          "description": "Whether to compile independent java modules in parallel. Greatly increases build speed but requires larger build process heap size."
+        },
+        "buildProcessHeapSize": {
+          "type": "integer",
+          "description": "Shared build process heap size in megabytes."
         }
       }
     }
