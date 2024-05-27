@@ -15,7 +15,7 @@ public class CreateAutoconfigFileDialog extends DialogWrapper {
 
 	private CreateAutoconfigFileForm autoconfigFileForm;
 
-	protected CreateAutoconfigFileDialog() {
+	public CreateAutoconfigFileDialog() {
 		super(false);
 		init();
 		setTitle("Create Autoconfig File");
@@ -26,7 +26,7 @@ public class CreateAutoconfigFileDialog extends DialogWrapper {
 		autoconfigFileForm = new CreateAutoconfigFileForm(AutoconfigStartup.EP_NAME.getExtensionList());
 		return autoconfigFileForm.getForm();
 	}
-	
+
 	public Optional<UpdateHandler<?>> getSelectedHandler() {
 		return autoconfigFileForm.getSelectedHandler();
 	}

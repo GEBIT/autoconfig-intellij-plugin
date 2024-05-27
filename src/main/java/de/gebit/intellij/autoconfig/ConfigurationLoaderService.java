@@ -34,7 +34,7 @@ public final class ConfigurationLoaderService {
 		this.project = project;
 	}
 
-	public<T> Optional<T> getConfiguration(Class<T> objectClass, String configFileName) {
+	public <T> Optional<T> getConfiguration(Class<T> objectClass, String configFileName) {
 		T configObject = null;
 		Object o = configurationOptions.get(objectClass.getCanonicalName());
 		if (o != null && o.getClass().isAssignableFrom(objectClass)) {
@@ -66,5 +66,9 @@ public final class ConfigurationLoaderService {
 			Notifications.showInfo("Unable to parse configuration yaml: " + configFileName, project);
 		}
 		return Optional.ofNullable(configObject);
+	}
+
+	public void resetConfigurationCache() {
+		configurationOptions.clear();
 	}
 }

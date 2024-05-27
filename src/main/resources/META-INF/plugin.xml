@@ -41,7 +41,8 @@
     </extensions>
     <actions>
         <group id="AutoConfigGroup" popup="true" text="Autoconfig">
-            <action id="CreateAutoconfigFileAction" class="de.gebit.intellij.autoconfig.create.CreateAutoconfigFileAction" text="Create Autoconfig File" description="Create a new Autoconfig File"/>
+            <action id="RunAutoconfigAction" class="de.gebit.intellij.autoconfig.actions.RunAutoconfigAction" text="Run Autoconfig" description="Apply your projects Autoconfig configurations"/>
+            <action id="CreateAutoconfigFileAction" class="de.gebit.intellij.autoconfig.actions.CreateAutoconfigFileAction" text="Create Autoconfig File" description="Create a new Autoconfig File"/>
             <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
         </group>
     </actions>

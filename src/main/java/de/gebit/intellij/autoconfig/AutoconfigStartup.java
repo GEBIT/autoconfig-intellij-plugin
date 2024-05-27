@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,10 @@ public class AutoconfigStartup implements ProjectActivity {
 	@Nullable
 	@Override
 	public Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
+		return runAutoconfig(project);
+	}
+
+	public @Nullable List<String> runAutoconfig(@NotNull Project project) {
 		ConfigurationLoaderService projectService = project.getService(ConfigurationLoaderService.class);
 		if (projectService == null) {
 			return null;
@@ -43,9 +48,8 @@ public class AutoconfigStartup implements ProjectActivity {
 
 		List<String> changedConfigs = new ArrayList<>();
 
-		for (UpdateHandler updateHandler : EP_NAME.getExtensionList()) {
-			Optional<Object> extensionConfiguration = projectService.getConfiguration(updateHandler.getConfigurationClass(), updateHandler.getFileName());
-			extensionConfiguration.ifPresentOrElse(config -> changedConfigs.addAll(updateHandler.updateConfiguration(config, project)), () -> LOG.info("No configuration for " + updateHandler.getUpdaterName() + " found."));
+		for (UpdateHandler<?> updateHandler : EP_NAME.getExtensionList()) {
+			changedConfigs.addAll(processUpdateHandler(project, updateHandler, projectService));
 		}
 
 		if (!changedConfigs.isEmpty()) {
@@ -54,5 +58,15 @@ public class AutoconfigStartup implements ProjectActivity {
 		}
 
 		return changedConfigs;
+	}
+
+	private <T> List<String> processUpdateHandler(@NotNull Project project, UpdateHandler<T> updateHandler, ConfigurationLoaderService projectService) {
+		Optional<T> extensionConfiguration = projectService.getConfiguration(updateHandler.getConfigurationClass(), updateHandler.getFileName());
+		if (extensionConfiguration.isPresent()) {
+			return updateHandler.updateConfiguration(extensionConfiguration.get(), project);
+		} else {
+			LOG.info("No configuration for " + updateHandler.getUpdaterName() + " found.");
+			return Collections.emptyList();
+		}
 	}
 }

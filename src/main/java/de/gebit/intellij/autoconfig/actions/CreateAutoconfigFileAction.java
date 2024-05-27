@@ -1,4 +1,4 @@
-package de.gebit.intellij.autoconfig.create;
+package de.gebit.intellij.autoconfig.actions;
 
 import com.intellij.ide.IdeView;
 import com.intellij.ide.actions.CreateInDirectoryActionBase;
@@ -16,6 +16,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import de.gebit.intellij.autoconfig.UpdateHandler;
+import de.gebit.intellij.autoconfig.create.CreateAutoconfigFileDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
