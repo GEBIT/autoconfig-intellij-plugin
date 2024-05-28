@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
 
-    group 'de.gebit.intellij.autoconfig'
+    group 'de.gebit.plugins.autoconfig'
 
     ext {
         lombokVersion = '1.18.30'
@@ -16,9 +16,20 @@ allprojects {
         javaxPersistenceVersion = '2.2'
         jUnitJupiterVersion = '5.10.1'
         intellijType = 'IC' // IC: Community Edition, IU: Ultimate Edition.
-        intellijVersion = '2024.1' // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-        intellijSinceBuild = '232.1'
+        intellijVersion = '2023.2' // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+        intellijSinceBuild = '232.10300.40'
     }
+}
+
+patchPluginXml {
+    sinceBuild = "232.1"
+    untilBuild = "241.*"
+}
+
+signPlugin {
+    certificateChain = System.getenv("CERTIFICATE_CHAIN")
+    privateKey = System.getenv("PRIVATE_KEY")
+    password = System.getenv("PRIVATE_KEY_PASSWORD")
 }
 
 repositories {
@@ -31,7 +42,7 @@ ext.groovyVersion = "3.0.19"
 intellij {
     // Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
     version = System.getenv().getOrDefault("IJ_VERSION",
-            "2024.1"
+            "2023.2"
     )
     pluginName = "AutoConfigPlugin"
     downloadSources = true
@@ -53,6 +64,7 @@ dependencies {
     implementation 'javax.validation:validation-api:1.1.0.CR2'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1'
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
@@ -70,7 +82,7 @@ jsonSchema2Pojo {
 
     // Package name used for generated Java classes (for types where a fully qualified name has not
     // been supplied in the schema using the 'javaType' property).
-    targetPackage = 'de.gebit.intellij.autoconfig.model'
+    targetPackage = 'de.gebit.plugins.autoconfig.model'
 
     // Whether to allow 'additional' properties to be supported in classes by adding a map to
     // hold these. This is true by default, meaning that the schema rule 'additionalProperties'

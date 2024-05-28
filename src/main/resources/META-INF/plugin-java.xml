@@ -1,5 +1,5 @@
 <idea-plugin>
-    <extensions defaultExtensionNs="de.gebit.intellij.autoconfig">
-        <configurationUpdater implementation="de.gebit.intellij.autoconfig.handlers.java.JavaHandler"/>
+    <extensions defaultExtensionNs="de.gebit.plugins.autoconfig">
+        <configurationUpdater implementation="de.gebit.plugins.autoconfig.handlers.java.JavaHandler"/>
     </extensions>
 </idea-plugin>

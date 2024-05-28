@@ -1,5 +1,5 @@
 <idea-plugin url="https://gitlab.local.gebit.de/intellij/trend-tools">
-    <id>de.gebit.intellij.autoconfig</id>
+    <id>de.gebit.plugins.autoconfig</id>
     <name>Autoconfig</name>
     <vendor email="jetbrains@gebit.de" url="https://github.com/GEBIT/autoconfig-intellij-plugin">GEBIT Solutions GmbH</vendor>
 
@@ -24,25 +24,25 @@
     <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
 
     <extensionPoints>
-        <extensionPoint name="configurationUpdater" interface="de.gebit.intellij.autoconfig.UpdateHandler" dynamic="true"/>
+        <extensionPoint name="configurationUpdater" interface="de.gebit.plugins.autoconfig.UpdateHandler" dynamic="true"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="de.gebit.intellij.autoconfig.AutoconfigStartup"/>
+        <postStartupActivity implementation="de.gebit.plugins.autoconfig.AutoconfigStartup"/>
         <notificationGroup displayType="BALLOON" id="Autoconfig"/>
-        <formatOnSaveOptions.defaultsProvider implementation="de.gebit.intellij.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
-        <updateSettingsProvider implementation="de.gebit.intellij.autoconfig.plugins.AutoConfigUpdateSettingsProvider"/>
+        <formatOnSaveOptions.defaultsProvider implementation="de.gebit.plugins.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
+        <updateSettingsProvider implementation="de.gebit.plugins.autoconfig.plugins.AutoConfigUpdateSettingsProvider"/>
     </extensions>
     <extensions defaultExtensionNs="JavaScript.JsonSchema">
-        <ProviderFactory implementation="de.gebit.intellij.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
+        <ProviderFactory implementation="de.gebit.plugins.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
     </extensions>
-    <extensions defaultExtensionNs="de.gebit.intellij.autoconfig">
-        <configurationUpdater implementation="de.gebit.intellij.autoconfig.handlers.CommonConfigurationHandler"/>
+    <extensions defaultExtensionNs="de.gebit.plugins.autoconfig">
+        <configurationUpdater implementation="de.gebit.plugins.autoconfig.handlers.CommonConfigurationHandler"/>
     </extensions>
     <actions>
-        <group id="AutoConfigGroup" popup="true" text="Autoconfig">
-            <action id="RunAutoconfigAction" class="de.gebit.intellij.autoconfig.actions.RunAutoconfigAction" text="Run Autoconfig" description="Apply your projects Autoconfig configurations"/>
-            <action id="CreateAutoconfigFileAction" class="de.gebit.intellij.autoconfig.actions.CreateAutoconfigFileAction" text="Create Autoconfig File" description="Create a new Autoconfig File"/>
+        <group id="AutoconfigGroup" popup="true" text="Autoconfig">
+            <action id="RunAutoconfigAction" class="de.gebit.plugins.autoconfig.actions.RunAutoconfigAction" text="Run Autoconfig" description="Apply your projects Autoconfig configurations"/>
+            <action id="CreateAutoconfigFileAction" class="de.gebit.plugins.autoconfig.actions.CreateAutoconfigFileAction" text="Create Autoconfig File" description="Create a new Autoconfig File"/>
             <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
         </group>
     </actions>
