@@ -44,7 +44,7 @@ intellij {
     version = System.getenv().getOrDefault("IJ_VERSION",
             "2023.2"
     )
-    pluginName = "AutoConfigPlugin"
+    pluginName = "AutoconfigPlugin"
     downloadSources = true
     updateSinceUntilBuild = false
     instrumentCode = false

@@ -14,7 +14,7 @@ import java.util.Optional;
  * "Safer" Plugin-Repository Provider which does not persist the configured plugin repository. This provider is used when checking for required
  * plugins and when checking for plugin updates.
  */
-public class AutoConfigUpdateSettingsProvider implements UpdateSettingsProvider {
+public class AutoconfigUpdateSettingsProvider implements UpdateSettingsProvider {
 
 	@NotNull
 	@Override

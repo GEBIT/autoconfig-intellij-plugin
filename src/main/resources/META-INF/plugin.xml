@@ -31,7 +31,7 @@
         <postStartupActivity implementation="de.gebit.plugins.autoconfig.AutoconfigStartup"/>
         <notificationGroup displayType="BALLOON" id="Autoconfig"/>
         <formatOnSaveOptions.defaultsProvider implementation="de.gebit.plugins.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
-        <updateSettingsProvider implementation="de.gebit.plugins.autoconfig.plugins.AutoConfigUpdateSettingsProvider"/>
+        <updateSettingsProvider implementation="de.gebit.plugins.autoconfig.plugins.AutoconfigUpdateSettingsProvider"/>
     </extensions>
     <extensions defaultExtensionNs="JavaScript.JsonSchema">
         <ProviderFactory implementation="de.gebit.plugins.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
