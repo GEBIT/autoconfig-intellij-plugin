@@ -5,17 +5,6 @@
 
     <version>0.0.1</version>
     <idea-version since-build="232.1"/>
-    <description><![CDATA[
-        TODO: HTML text describing the autoconfig plugin functionality.
-        ]]>
-    </description>
-    <change-notes>
-        <![CDATA[
-        <html lang="EN"><body><ul>
-            <li>initial plugin version</li>
-        </ul></body></html>
-        ]]>
-    </change-notes>
 
     <depends>com.intellij.modules.json</depends>
     <depends>org.jetbrains.plugins.yaml</depends>

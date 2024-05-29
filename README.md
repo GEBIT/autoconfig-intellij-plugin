@@ -16,10 +16,10 @@ Autoconfig helps you with sharing settings across multiple users by allowing you
 ## How to use
 
 1. Go to `Tools -> Autoconfig -> Create Autoconfig File`
-2. Select the type of autoconfig you want to create
+2. Select the type of Autoconfig you want to create
 3. Create an Autoconfig file for your project
-4. Restart your IDE  
-   Autoconfig automatically configures your IDE on restart
+4. Restart your IDE
+5. Autoconfig automatically configures your IDE on restart
 
 ## Available settings
 
