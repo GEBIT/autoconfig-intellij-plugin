@@ -5,23 +5,24 @@
     <title>Autoconfig Plugin Description</title>
 </head>
 <body>
-<p>Autoconfig is an extension for IntelliJ IDEA which allows you to persist and share project specific IDE-settings outside the <code>workspace.xml</code>-file.</p>
+<p>Autoconfig is an extension for IntelliJ IDEA that enables persistence and sharing of project specific IDE-settings outside the <code>workspace.xml</code>-file.</p>
 <h2 id="goal">Goal</h2>
-<p>Several user-specific IDE settings are stored for each project in the VCS-ignored-<code>workspace.xml</code>-file. This is a good thing, but it can be cumbersome to configure your IDE differently for each project. Some IDE settings that might want to be shared across users:</p>
+<p>Several user-specific IDE settings are stored for each project in the VCS-ignored-<code>workspace.xml</code>-file. This is a good thing for individual workspace look and feel, but some project-specific settings are also stored in the workspace.xml. That's why it can be cumbersome to configure your IDE differently for each project. Here are some examples for IDE settings that might be a good idea to be shared across users:</p>
 <ul>
     <li>Format on Save</li>
     <li>Custom Plugin Repositories</li>
     <li>Compiler Settings</li>
     <li>Maven Importing Settings</li>
 </ul>
-<p>Autoconfig helps you with sharing settings across multiple users by allowing you to configure settings in a separate file which can be checked in into your version control. This lessens the need of project specific instructions on how to configure your IDE for working on a project, and it ensures that all users share the same settings.</p>
+<p>Autoconfig helps with sharing settings across multiple users by allowing to configure settings in a separate file which can be committed into your version control. This lessens the need of project specific instructions on how to configure your IDE for working on a project, and it ensures that all users share the same settings.</p>
 <h2 id="getting-started">Getting started</h2>
 <ol>
     <li>Go to <code>Tools -&gt; Autoconfig -&gt; Create Autoconfig File</code></li>
-    <li>Select the type of Autoconfig you want to create</li>
+    <li>Select the type of Autoconfig that should be created</li>
     <li>Create an Autoconfig file for your project</li>
-    <li>Restart your IDE</li>
-    <li>Autoconfig automatically configures your IDE on restart</li>
+    <li>Reopen your project</li>
+    <li>Autoconfig automatically configures the IDE on restart</li>
+    <li>Commit the Autoconfig configuration file(s)</li>
 </ol>
 </body>
 </html>

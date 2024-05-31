@@ -1,25 +1,26 @@
 # Autoconfig for IntelliJ
 
-Autoconfig is an extension for IntelliJ IDEA which allows you to persist and share project specific IDE-settings outside the `workspace.xml`-file.
+Autoconfig is an extension for IntelliJ IDEA that enables persistence and sharing of project specific IDE-settings outside the `workspace.xml`-file.
 
 ## Goal
 
-Several user specific IDE settings are stored for each project in the VCS-ignored-`workspace.xml`-file. This is a good thing, but it can be cumbersome to configure your IDE differently for each project. Some IDE settings that might want to be shared across users:
+Several user-specific IDE settings are stored for each project in the VCS-ignored-`workspace.xml`-file. This is a good thing for individual workspace look and feel, but some project-specific settings are also stored in the workspace.xml. That's why it can be cumbersome to configure your IDE differently for each project. Here are some examples for IDE settings that might be a good idea to be shared across users:
 
 - Format on Save
 - Custom Plugin Repositories
 - Compiler Settings
 - Maven Importing Settings
 
-Autoconfig helps you with sharing settings across multiple users by allowing you to configure settings in a separate file which can be checked in into your version control. This lessens the need of project specific instructions on how to configure your IDE for working on a project, and it ensures that all users share the same settings.
+Autoconfig helps with sharing settings across multiple users by allowing to configure settings in a separate file which can be committed into your version control. This lessens the need of project specific instructions on how to configure your IDE for working on a project, and it ensures that all users share the same settings.
 
 ## How to use
 
 1. Go to `Tools -> Autoconfig -> Create Autoconfig File`
-2. Select the type of Autoconfig you want to create
+2. Select the type of Autoconfig that should be created
 3. Create an Autoconfig file for your project
-4. Restart your IDE
-5. Autoconfig automatically configures your IDE on restart
+4. Reopen your project
+5. Autoconfig automatically configures the IDE on restart
+6. Commit the Autoconfig configuration file(s)
 
 ## Available settings
 
