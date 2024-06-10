@@ -84,7 +84,7 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 	}
 
 	private void applyIssueNavigationConfiguration(List<IssueNavigation> issueNavigationConfig, Project aProject, List<String> updatedConfigs) {
-		if (issueNavigationConfig != null) {
+		if (issueNavigationConfig != null && !issueNavigationConfig.isEmpty()) {
 			var issueNavigationSettings = IssueNavigationConfiguration.getInstance(aProject);
 			var newSettingsList = new ArrayList<IssueNavigationLink>();
 
