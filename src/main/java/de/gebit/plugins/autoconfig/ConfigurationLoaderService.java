@@ -44,15 +44,11 @@ public final class ConfigurationLoaderService {
 		if (configObject != null) {
 			return Optional.of(configObject);
 		}
-		var projectFile = project.getProjectFile();
-		if (projectFile == null) {
+		Optional<VirtualFile> autoconfigDirectory = getConfigDirectory();
+		if (autoconfigDirectory.isEmpty()) {
 			return Optional.empty();
 		}
-		VirtualFile autoconfigDirectory = projectFile.getParent().findChild("autoconfig");
-		if (autoconfigDirectory == null) {
-			return Optional.empty();
-		}
-		var configYaml = autoconfigDirectory.findChild(configFileName);
+		var configYaml = autoconfigDirectory.get().findChild(configFileName);
 		if (configYaml == null) {
 			return Optional.empty();
 		}
@@ -66,6 +62,18 @@ public final class ConfigurationLoaderService {
 			Notifications.showInfo("Unable to parse configuration yaml: " + configFileName, project);
 		}
 		return Optional.ofNullable(configObject);
+	}
+
+	public boolean hasAutoconfigDir() {
+		return getConfigDirectory().isPresent();
+	}
+
+	private Optional<VirtualFile> getConfigDirectory() {
+		var projectFile = project.getProjectFile();
+		if (projectFile == null) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(projectFile.getParent().findChild("autoconfig"));
 	}
 
 	public void resetConfigurationCache() {

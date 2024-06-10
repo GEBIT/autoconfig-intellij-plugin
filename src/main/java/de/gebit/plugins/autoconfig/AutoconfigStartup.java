@@ -8,6 +8,7 @@
 
 package de.gebit.plugins.autoconfig;
 
+import com.intellij.ide.impl.TrustedProjects;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
@@ -40,9 +41,15 @@ public class AutoconfigStartup implements ProjectActivity {
 		return runAutoconfig(project);
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public @Nullable List<String> runAutoconfig(@NotNull Project project) {
 		ConfigurationLoaderService projectService = project.getService(ConfigurationLoaderService.class);
-		if (projectService == null) {
+		if (projectService == null || !projectService.hasAutoconfigDir()) {
+			return null;
+		}
+
+		if (!TrustedProjects.isTrusted(project)) {
+			showInfo("Project configuration has not been updated, because project was opened in safe mode.", project);
 			return null;
 		}
 
