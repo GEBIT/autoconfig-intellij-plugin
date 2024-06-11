@@ -1,4 +1,4 @@
-<idea-plugin url="https://gitlab.local.gebit.de/intellij/trend-tools">
+<idea-plugin url="https://github.com/GEBIT/autoconfig-intellij-plugin">
     <id>de.gebit.plugins.autoconfig</id>
     <name>Autoconfig</name>
     <vendor email="jetbrains@gebit.de" url="https://github.com/GEBIT/autoconfig-intellij-plugin">GEBIT Solutions GmbH</vendor>
