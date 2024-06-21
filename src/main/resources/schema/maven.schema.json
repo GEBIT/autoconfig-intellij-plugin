@@ -33,7 +33,7 @@
         },
         "downloadSources": {
           "type": "boolean",
-          "description": "Whether sources of dependencies should be downloaded automatically (required for TREND projects!)."
+          "description": "Whether sources of dependencies should be downloaded automatically."
         },
         "downloadDocumentation": {
           "type": "boolean",
