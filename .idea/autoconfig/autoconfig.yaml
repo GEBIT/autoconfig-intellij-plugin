@@ -1,0 +1,7 @@
+onSave:
+  format:
+    types:
+      - java
+  optimizeImports:
+    types:
+      - java
