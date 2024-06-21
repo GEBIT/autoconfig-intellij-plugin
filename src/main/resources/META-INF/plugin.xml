@@ -2,8 +2,7 @@
     <id>de.gebit.plugins.autoconfig</id>
     <name>Autoconfig</name>
     <vendor email="jetbrains@gebit.de" url="https://github.com/GEBIT/autoconfig-intellij-plugin">GEBIT Solutions GmbH</vendor>
-
-    <version>0.0.1</version>
+    
     <idea-version since-build="232.1"/>
 
     <depends>com.intellij.modules.json</depends>

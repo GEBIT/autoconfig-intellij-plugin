@@ -4,6 +4,9 @@ plugins {
     id "org.jsonschema2pojo" version "1.2.1"
 }
 
+group = getProperty("pluginGroup")
+version = getProperty("pluginVersion")
+
 allprojects {
 
     group 'de.gebit.plugins.autoconfig'
@@ -22,16 +25,30 @@ allprojects {
 }
 
 patchPluginXml {
+    version = getProperty("pluginVersion")
     sinceBuild = "232.1"
     untilBuild = "241.*"
-    pluginDescription = new File("metadata/description.html").text
-    changeNotes = new File("metadata/changelog.html").text
+    def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
+    pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
+    changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
+}
+
+task printVersion {
+    doLast {
+        println(rootProject.version)
+    }
 }
 
 signPlugin {
     certificateChain = System.getenv("CERTIFICATE_CHAIN")
     privateKey = System.getenv("PRIVATE_KEY")
     password = System.getenv("PRIVATE_KEY_PASSWORD")
+}
+
+publishPlugin {
+    token = System.getenv("PUBLISH_TOKEN") 
+    setHidden(getProperty("hidden") as Boolean)
+    channels = getProperty("preRelease") ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
 }
 
 repositories {

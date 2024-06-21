@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name: Build, sign and publish plugin
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: adopt-hotspot
+      - name: Run Gradle Check # also ensures gradle is downloaded
+        run: |
+          chmod +x gradlew
+          ./gradlew check
+      - name: Set release flag
+        id: release
+        shell: bash
+        run: echo "preRelease=${{ github.event.release.prerelease}}" >> $GITHUB_OUTPUT
+      - name: Build plugin
+        run: ./gradlew buildPlugin
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+      - name: Sign and publish plugin
+        run: ./gradlew signPlugin publishPlugin -PpreRelease=${{ steps.release.outputs.preRelease }}
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
