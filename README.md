@@ -1,6 +1,6 @@
-# Autoconfig for IntelliJ
+# Autoconfig for Jetbrains IDEs
 
-Autoconfig is an extension for IntelliJ IDEA that enables persistence and sharing of project specific IDE-settings outside the `workspace.xml`-file.
+Autoconfig is an extension for IntelliJ IDEA and other Jetbrains IDEs that enables persistence and sharing of project specific IDE-settings outside the `workspace.xml`-file.
 
 ## Goal
 
@@ -21,6 +21,9 @@ Autoconfig helps with sharing settings across multiple users by allowing to conf
 4. Reopen your project
 5. Autoconfig automatically configures the IDE on restart
 6. Commit the Autoconfig configuration file(s)
+
+## How to set up
+Detailed setup instructions can be found in the [project Wiki](https://github.com/GEBIT/autoconfig-intellij-plugin/wiki).
 
 ## Available settings
 
