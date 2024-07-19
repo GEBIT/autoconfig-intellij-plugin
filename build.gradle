@@ -4,8 +4,8 @@ plugins {
     id "org.jsonschema2pojo" version "1.2.1"
 }
 
-group = getProperty("pluginGroup")
-version = getProperty("pluginVersion")
+group = findProperty("pluginGroup")
+version = findProperty("pluginVersion")
 
 allprojects {
 
@@ -25,7 +25,7 @@ allprojects {
 }
 
 patchPluginXml {
-    version = getProperty("pluginVersion")
+    version = findProperty("pluginVersion")
     sinceBuild = "232.1"
     untilBuild = "241.*"
     def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
@@ -47,8 +47,8 @@ signPlugin {
 
 publishPlugin {
     token = System.getenv("PUBLISH_TOKEN") 
-    setHidden(getProperty("hidden") as Boolean)
-    channels = getProperty("preRelease") ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
+    setHidden(findProperty("hidden").toBoolean())
+    channels = findProperty("preRelease").toBoolean() ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
 }
 
 repositories {
