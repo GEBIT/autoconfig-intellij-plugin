@@ -18,6 +18,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="de.gebit.plugins.autoconfig.AutoconfigStartup"/>
         <notificationGroup displayType="BALLOON" id="Autoconfig"/>
+        <notificationGroup displayType="STICKY_BALLOON" id="AutoconfigSDK"/>
         <formatOnSaveOptions.defaultsProvider implementation="de.gebit.plugins.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
         <updateSettingsProvider implementation="de.gebit.plugins.autoconfig.plugins.AutoconfigUpdateSettingsProvider"/>
     </extensions>
