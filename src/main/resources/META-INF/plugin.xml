@@ -21,6 +21,7 @@
         <notificationGroup displayType="STICKY_BALLOON" id="AutoconfigSDK"/>
         <formatOnSaveOptions.defaultsProvider implementation="de.gebit.plugins.autoconfig.FormatOnSaveOptionsDefaultsProvider"/>
         <updateSettingsProvider implementation="de.gebit.plugins.autoconfig.plugins.AutoconfigUpdateSettingsProvider"/>
+        <fileType name="Autoconfig File" language="yaml" patterns="autoconfig*.yaml" implementationClass="de.gebit.plugins.autoconfig.AutoconfigFileType" fieldName="INSTANCE"/>
     </extensions>
     <extensions defaultExtensionNs="JavaScript.JsonSchema">
         <ProviderFactory implementation="de.gebit.plugins.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
