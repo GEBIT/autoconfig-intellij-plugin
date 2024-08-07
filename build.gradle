@@ -27,13 +27,13 @@ allprojects {
 patchPluginXml {
     version = findProperty("pluginVersion")
     sinceBuild = "232.1"
-    untilBuild = "241.*"
+    untilBuild = "242.*"
     def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
     pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
     changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
 }
 
-task printVersion {
+tasks.register('printVersion') {
     doLast {
         println(rootProject.version)
     }
