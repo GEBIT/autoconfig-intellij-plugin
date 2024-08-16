@@ -4,6 +4,22 @@
   "title": "Java configuration",
   "type": "object",
   "properties": {
+    "debugger": {
+      "type": "object",
+      "description": "Debugger settings",
+      "properties": {
+        "asyncStackTraces": {
+          "description": "Settings for async stack traces",
+          "type": "object",
+          "properties": {
+            "useInstrumentingAgent": {
+              "type": "boolean",
+              "description": "Whether instrumenting agent should be used (application wide setting!)"
+            }
+          }
+        }
+      }
+    },
     "compiler": {
       "type": "object",
       "description": "Compiler settings",
