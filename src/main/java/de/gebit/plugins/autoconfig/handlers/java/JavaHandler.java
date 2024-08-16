@@ -11,11 +11,14 @@ package de.gebit.plugins.autoconfig.handlers.java;
 import com.intellij.compiler.CompilerConfiguration;
 import com.intellij.compiler.CompilerConfigurationImpl;
 import com.intellij.compiler.impl.javaCompiler.BackendCompiler;
+import com.intellij.debugger.settings.DebuggerSettings;
 import com.intellij.openapi.project.Project;
 import de.gebit.plugins.autoconfig.UpdateHandler;
 import de.gebit.plugins.autoconfig.handlers.AbstractHandler;
 import de.gebit.plugins.autoconfig.model.AnnotationProcessor;
+import de.gebit.plugins.autoconfig.model.AsyncStackTraces;
 import de.gebit.plugins.autoconfig.model.Compiler;
+import de.gebit.plugins.autoconfig.model.Debugger;
 import de.gebit.plugins.autoconfig.model.JavaConfiguration;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.jps.model.java.compiler.ProcessorConfigProfile;
@@ -55,12 +58,16 @@ public class JavaHandler extends AbstractHandler implements UpdateHandler<JavaCo
 	public List<String> updateConfiguration(JavaConfiguration configuration, Project project) {
 		List<String> changedConfigs = new ArrayList<>();
 		Compiler compiler = configuration.getCompiler();
-		if (compiler != null && CompilerConfiguration.getInstance(project) instanceof CompilerConfigurationImpl compilerConfiguration) {
+		if (compiler != null && CompilerConfiguration.getInstance(
+				project) instanceof CompilerConfigurationImpl compilerConfiguration) {
 			Compiler.JavaCompiler javaCompiler = compiler.getJavaCompiler();
-			if (javaCompiler != null && !compilerConfiguration.getDefaultCompiler().getId().equals(javaCompiler.value())) {
+			if (javaCompiler != null && !compilerConfiguration.getDefaultCompiler()
+					.getId()
+					.equals(javaCompiler.value())) {
 				for (BackendCompiler registeredCompiler : compilerConfiguration.getRegisteredJavaCompilers()) {
 					if (registeredCompiler.getId().equals(javaCompiler.value())) {
-						applySetting(registeredCompiler, compilerConfiguration.getDefaultCompiler(), compilerConfiguration::setDefaultCompiler, changedConfigs, "Java compiler");
+						applySetting(registeredCompiler, compilerConfiguration.getDefaultCompiler(),
+								compilerConfiguration::setDefaultCompiler, changedConfigs, "Java compiler");
 						break;
 					}
 				}
@@ -68,17 +75,32 @@ public class JavaHandler extends AbstractHandler implements UpdateHandler<JavaCo
 			AnnotationProcessor annotationProcessor = compiler.getAnnotationProcessor();
 			if (annotationProcessor != null) {
 				ProcessorConfigProfile defaultProcessorProfile = compilerConfiguration.getDefaultProcessorProfile();
-				applySetting(annotationProcessor.getEnable(), defaultProcessorProfile.isEnabled(), defaultProcessorProfile::setEnabled, changedConfigs, "Enable annotation processor");
+				applySetting(annotationProcessor.getEnable(), defaultProcessorProfile.isEnabled(),
+						defaultProcessorProfile::setEnabled, changedConfigs, "Enable annotation processor");
 			}
 
 			Boolean parallelCompilation = compiler.getParallelCompilation();
 			if (parallelCompilation != null) {
-				applySetting(parallelCompilation, compilerConfiguration.isParallelCompilationEnabled(), compilerConfiguration::setParallelCompilationEnabled, changedConfigs, "Enable parallel compilation");
+				applySetting(parallelCompilation, compilerConfiguration.isParallelCompilationEnabled(),
+						compilerConfiguration::setParallelCompilationEnabled, changedConfigs,
+						"Enable parallel compilation");
 			}
 
 			Integer buildProcessHeapSize = compiler.getBuildProcessHeapSize();
 			if (buildProcessHeapSize != null) {
-				applySetting(buildProcessHeapSize, compilerConfiguration.getBuildProcessHeapSize(0), compilerConfiguration::setBuildProcessHeapSize, changedConfigs, "Build process heap size");
+				applySetting(buildProcessHeapSize, compilerConfiguration.getBuildProcessHeapSize(0),
+						compilerConfiguration::setBuildProcessHeapSize, changedConfigs, "Build process heap size");
+			}
+		}
+
+		Debugger debugger = configuration.getDebugger();
+		if (debugger != null) {
+			AsyncStackTraces asyncStackTraces = debugger.getAsyncStackTraces();
+			if (asyncStackTraces != null) {
+				applySetting(asyncStackTraces.getUseInstrumentingAgent(),
+						DebuggerSettings.getInstance().INSTRUMENTING_AGENT,
+						v -> DebuggerSettings.getInstance().INSTRUMENTING_AGENT = v, changedConfigs,
+						"Use instrumenting agent (application setting)");
 			}
 		}
 		return changedConfigs;
