@@ -13,10 +13,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.impl.ProjectImpl;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import de.gebit.plugins.autoconfig.util.Notifications;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +29,11 @@ import java.util.Optional;
  */
 @Service(Service.Level.PROJECT)
 public final class ConfigurationLoaderService {
+	/**
+	 * Configuration directory containing yaml sources.
+	 */
+	public static final String AUTOCONFIG_DIRECTORY = "autoconfig";
+
 	private final Project project;
 
 	private final Map<String, Object> configurationOptions = new HashMap<>();
@@ -68,12 +76,21 @@ public final class ConfigurationLoaderService {
 		return getConfigDirectory().isPresent();
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	private Optional<VirtualFile> getConfigDirectory() {
 		var projectFile = project.getProjectFile();
 		if (projectFile == null) {
+			// Fallback to find autoconfig directory. May happen when project is first opened and no misc.xml can be found
+			if (project instanceof ProjectImpl projectImpl) {
+				Path directoryStorePath = projectImpl.getComponentStore().getDirectoryStorePath();
+				if (directoryStorePath != null) {
+					return Optional.ofNullable(VirtualFileManager.getInstance().findFileByNioPath(directoryStorePath))
+							.map(m -> m.findChild(AUTOCONFIG_DIRECTORY));
+				}
+			}
 			return Optional.empty();
 		}
-		return Optional.ofNullable(projectFile.getParent().findChild("autoconfig"));
+		return Optional.ofNullable(projectFile.getParent().findChild(AUTOCONFIG_DIRECTORY));
 	}
 
 	public void resetConfigurationCache() {
