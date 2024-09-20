@@ -78,7 +78,6 @@ public final class ConfigurationLoaderService {
 
 	private Optional<VirtualFile> getConfigDirectory() {
 		var projectFile = project.getProjectFile();
-		ProjectKt.getStateStore(project).getDirectoryStorePath();
 		if (projectFile == null) {
 			// Fallback to find autoconfig directory. May happen when project is first opened and no misc.xml can be found
 			Path directoryStorePath = ProjectKt.getStateStore(project).getDirectoryStorePath();

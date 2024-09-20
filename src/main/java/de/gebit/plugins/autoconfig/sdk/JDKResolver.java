@@ -10,8 +10,13 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.ProjectJdkTable;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.projectRoots.impl.*;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkCollector;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkFix;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkFixAction;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkSnapshot;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkTracker;
 import com.intellij.openapi.roots.ui.configuration.UnknownSdk;
 import com.intellij.openapi.ui.MessageType;
 import de.gebit.plugins.autoconfig.util.Notifications;
@@ -28,6 +33,21 @@ public class JDKResolver {
 
 	private JDKResolver() {
 		// nothing
+	}
+
+	public static String findProjectSdk(String sdkName, Project project) {
+		if (sdkName == null) {
+			return null;
+		}
+		for (Sdk jdk : ProjectJdkTable.getInstance().getAllJdks()) {
+			if (jdk.getName().equals(sdkName)) {
+				return jdk.getName();
+			}
+		}
+
+		resolveMissingJDK(sdkName, project);
+
+		return sdkName;
 	}
 
 	/**

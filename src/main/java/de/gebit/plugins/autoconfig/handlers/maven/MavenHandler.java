@@ -10,12 +10,9 @@ package de.gebit.plugins.autoconfig.handlers.maven;
 
 import com.intellij.conversion.impl.ConversionContextImpl;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.ProjectJdkTable;
-import com.intellij.openapi.projectRoots.Sdk;
 import de.gebit.plugins.autoconfig.UpdateHandler;
 import de.gebit.plugins.autoconfig.handlers.AbstractHandler;
 import de.gebit.plugins.autoconfig.model.MavenConfiguration;
-import de.gebit.plugins.autoconfig.sdk.JDKResolver;
 import org.jetbrains.idea.maven.execution.MavenRunner;
 import org.jetbrains.idea.maven.project.MavenProjectBundle;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
@@ -23,6 +20,8 @@ import org.jetbrains.idea.maven.project.MavenProjectsManager;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.gebit.plugins.autoconfig.sdk.JDKResolver.findProjectSdk;
 
 /**
  * Maven configuration update handler.
@@ -113,20 +112,5 @@ public class MavenHandler extends AbstractHandler implements UpdateHandler<Maven
 				return MavenProjectBundle.message("maven.bundled.version.3.title");
 			}
 		}
-	}
-
-	private String findProjectSdk(String sdkName, Project project) {
-		if (sdkName == null) {
-			return null;
-		}
-		for (Sdk jdk : ProjectJdkTable.getInstance().getAllJdks()) {
-			if (jdk.getName().equals(sdkName)) {
-				return jdk.getName();
-			}
-		}
-		
-		JDKResolver.resolveMissingJDK(sdkName, project);
-
-		return sdkName;
 	}
 }
