@@ -13,9 +13,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.impl.ProjectImpl;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.project.ProjectKt;
 import de.gebit.plugins.autoconfig.util.Notifications;
 
 import java.io.IOException;
@@ -76,17 +76,15 @@ public final class ConfigurationLoaderService {
 		return getConfigDirectory().isPresent();
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	private Optional<VirtualFile> getConfigDirectory() {
 		var projectFile = project.getProjectFile();
+		ProjectKt.getStateStore(project).getDirectoryStorePath();
 		if (projectFile == null) {
 			// Fallback to find autoconfig directory. May happen when project is first opened and no misc.xml can be found
-			if (project instanceof ProjectImpl projectImpl) {
-				Path directoryStorePath = projectImpl.getComponentStore().getDirectoryStorePath();
-				if (directoryStorePath != null) {
-					return Optional.ofNullable(VirtualFileManager.getInstance().findFileByNioPath(directoryStorePath))
-							.map(m -> m.findChild(AUTOCONFIG_DIRECTORY));
-				}
+			Path directoryStorePath = ProjectKt.getStateStore(project).getDirectoryStorePath();
+			if (directoryStorePath != null) {
+				return Optional.ofNullable(VirtualFileManager.getInstance().findFileByNioPath(directoryStorePath))
+						.map(m -> m.findChild(AUTOCONFIG_DIRECTORY));
 			}
 			return Optional.empty();
 		}
