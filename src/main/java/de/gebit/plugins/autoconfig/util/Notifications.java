@@ -33,6 +33,10 @@ public class Notifications {
 		getNotifier().createNotification(text, MessageType.INFO).notify(project);
 	}
 
+	public static void showWarning(String text, Project project) {
+		getNotifier().createNotification(text, MessageType.WARNING).notify(project);
+	}
+
 	public static void showError(String text, Project project) {
 		getNotifier().createNotification(text, MessageType.ERROR).notify(project);
 	}

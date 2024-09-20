@@ -93,6 +93,24 @@
           }
         }
       }
+    },
+    "projectSDK": {
+      "type": "object",
+      "description": "The project SDK settings.",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The SDK name, e.g. a version or a distributor"
+        },
+        "type": {
+          "type": "string",
+          "description": "The SDK type, e.g. \"JavaSDK\", \"IDEA JDK\", \"KotlinSDK\" or \"Android SDK\"."
+        }
+      }
     }
   }
 }

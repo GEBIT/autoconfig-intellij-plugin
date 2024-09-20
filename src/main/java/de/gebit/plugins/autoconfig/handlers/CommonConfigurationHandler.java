@@ -13,14 +13,24 @@ import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptionsBase;
 import com.intellij.codeInsight.actions.onSave.OptimizeImportsOnSaveOptions;
 import com.intellij.externalDependencies.ExternalDependenciesManager;
 import com.intellij.externalDependencies.impl.ExternalDependenciesManagerImpl;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTrackerSettings;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.vcs.IssueNavigationConfiguration;
 import com.intellij.openapi.vcs.IssueNavigationLink;
 import de.gebit.plugins.autoconfig.UpdateHandler;
-import de.gebit.plugins.autoconfig.model.*;
+import de.gebit.plugins.autoconfig.model.Formatting;
+import de.gebit.plugins.autoconfig.model.GeneralConfiguration;
+import de.gebit.plugins.autoconfig.model.IssueNavigation;
+import de.gebit.plugins.autoconfig.model.OnSave;
+import de.gebit.plugins.autoconfig.model.ProjectSDK;
+import de.gebit.plugins.autoconfig.model.ReloadProjectAutomatically;
+import de.gebit.plugins.autoconfig.sdk.JDKResolver;
 import de.gebit.plugins.autoconfig.state.TransientPluginStateService;
+import de.gebit.plugins.autoconfig.util.Notifications;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +39,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The main class used to update the IntelliJ configuration. All supported options are checked, updated and logged in a list of changed configs.
+ * The main class used to update the IntelliJ configuration. All supported options are checked, updated and logged in a
+ * list of changed configs.
  */
 public class CommonConfigurationHandler extends AbstractHandler implements UpdateHandler<GeneralConfiguration> {
 	private static final @NonNls String CONFIG_SCHEMA_JSON = "/schema/config.schema.json";
@@ -65,20 +76,24 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 		applyPluginHosts(options.getGlobalPluginRepositories(), project, updatedConfigs);
 		applyOnSaveOptions(options.getOnSave(), project, updatedConfigs);
 		applyReloadConfiguration(options.getReloadProjectAutomatically(), project, updatedConfigs);
+		applyProjectSDKOptions(options.getProjectSDK(), project, updatedConfigs);
 		return updatedConfigs;
 	}
 
 	private void applyReloadConfiguration(ReloadProjectAutomatically reloadProjectAutomatically, Project project, List<String> updatedConfigs) {
 		if (reloadProjectAutomatically != null) {
-			final ExternalSystemProjectTrackerSettings instance = ExternalSystemProjectTrackerSettings.getInstance(project);
+			final ExternalSystemProjectTrackerSettings instance = ExternalSystemProjectTrackerSettings.getInstance(
+					project);
 			if (Boolean.FALSE.equals(reloadProjectAutomatically.getEnabled())) {
-				applySetting(ExternalSystemProjectTrackerSettings.AutoReloadType.NONE, instance.getAutoReloadType(), instance::setAutoReloadType, updatedConfigs, "Automatic project reload deactivated");
+				applySetting(ExternalSystemProjectTrackerSettings.AutoReloadType.NONE, instance.getAutoReloadType(),
+						instance::setAutoReloadType, updatedConfigs, "Automatic project reload deactivated");
 				instance.setAutoReloadType(ExternalSystemProjectTrackerSettings.AutoReloadType.NONE);
 			} else if (reloadProjectAutomatically.getMode() != null) {
 				applySetting(switch (reloadProjectAutomatically.getMode()) {
-					case ANY_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.ALL;
-					case EXTERNAL_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.SELECTIVE;
-				}, instance.getAutoReloadType(), instance::setAutoReloadType, updatedConfigs, "Automatic project reload activated");
+							case ANY_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.ALL;
+							case EXTERNAL_CHANGES -> ExternalSystemProjectTrackerSettings.AutoReloadType.SELECTIVE;
+						}, instance.getAutoReloadType(), instance::setAutoReloadType, updatedConfigs,
+						"Automatic project reload activated");
 			}
 		}
 	}
@@ -89,9 +104,11 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 			var newSettingsList = new ArrayList<IssueNavigationLink>();
 
 			for (IssueNavigation navigationConfig : issueNavigationConfig) {
-				newSettingsList.add(new IssueNavigationLink(navigationConfig.getExpression(), navigationConfig.getUrl()));
+				newSettingsList.add(
+						new IssueNavigationLink(navigationConfig.getExpression(), navigationConfig.getUrl()));
 			}
-			applySetting(newSettingsList, issueNavigationSettings.getLinks(), issueNavigationSettings::setLinks, updatedConfigs, "Issue navigation links");
+			applySetting(newSettingsList, issueNavigationSettings.getLinks(), issueNavigationSettings::setLinks,
+					updatedConfigs, "Issue navigation links");
 		}
 	}
 
@@ -100,15 +117,37 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 			// first, initialise the application state service used for code formatter options
 			Formatting optionsFormat = options.getFormat();
 			Formatting optionsOptimizeImports = options.getOptimizeImports();
-			TransientPluginStateService.getInstance().initFormatterSettings(getFileTypes(optionsFormat), getFileTypes(optionsOptimizeImports));
+			TransientPluginStateService.getInstance()
+					.initFormatterSettings(getFileTypes(optionsFormat), getFileTypes(optionsOptimizeImports));
 
-			setFormattingOptions(updatedConfigs, optionsFormat, "Code format on save", FormatOnSaveOptions.getInstance(project));
-			setFormattingOptions(updatedConfigs, optionsOptimizeImports, "Optimize imports on save", OptimizeImportsOnSaveOptions.getInstance(project));
+			setFormattingOptions(updatedConfigs, optionsFormat, "Code format on save",
+					FormatOnSaveOptions.getInstance(project));
+			setFormattingOptions(updatedConfigs, optionsOptimizeImports, "Optimize imports on save",
+					OptimizeImportsOnSaveOptions.getInstance(project));
+		}
+	}
+
+	private void applyProjectSDKOptions(ProjectSDK sdkOptions, Project project, List<String> updatedConfigs) {
+		if (sdkOptions != null) {
+			SdkType sdk = SdkType.findByName(sdkOptions.getType());
+			if (sdk != null) {
+				String projectSdk = JDKResolver.findProjectSdk(sdkOptions.getName(), project);
+				if (projectSdk != null) {
+					ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
+					applySetting(projectSdk, projectRootManager.getProjectSdkName(), sdkName -> WriteAction.runAndWait(
+									() -> projectRootManager.setProjectSdkName(sdkName, sdkOptions.getType())), updatedConfigs,
+							"Project SDK");
+				}
+			} else {
+				Notifications.showWarning(
+						"SDK type \"" + sdkOptions.getType() + "\" has not been found for auto configuration", project);
+			}
 		}
 	}
 
 	private void setFormattingOptions(List<String> updatedConfigs, Formatting optionsFormat, String description, FormatOnSaveOptionsBase<?> format) {
-		applySetting(optionsFormat != null, format.isRunOnSaveEnabled(), format::setRunOnSaveEnabled, updatedConfigs, description);
+		applySetting(optionsFormat != null, format.isRunOnSaveEnabled(), format::setRunOnSaveEnabled, updatedConfigs,
+				description);
 	}
 
 	private List<String> getFileTypes(@Nullable Formatting formattingOptions) {
