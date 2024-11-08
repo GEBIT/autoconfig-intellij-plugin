@@ -27,7 +27,7 @@ allprojects {
 patchPluginXml {
     version = findProperty("pluginVersion")
     sinceBuild = "232.1"
-    untilBuild = "242.*"
+    // untilBuild = "242.*"
     def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
     pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
     changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
