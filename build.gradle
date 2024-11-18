@@ -46,7 +46,7 @@ signPlugin {
 }
 
 publishPlugin {
-    token = System.getenv("PUBLISH_TOKEN") 
+    token = System.getenv("PUBLISH_TOKEN")
     setHidden(findProperty("hidden").toBoolean())
     channels = findProperty("preRelease").toBoolean() ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
 }
@@ -72,7 +72,8 @@ intellij {
             "Git4Idea",
             "junit",
             "org.jetbrains.plugins.yaml",
-            "org.jetbrains.idea.maven"
+            "org.jetbrains.idea.maven",
+            "org.sonarlint.idea:10.8.1.79205"
     ]
 }
 buildSearchableOptions.enabled = false // Disable because it takes a long time and the plugin doesn't need it
@@ -285,7 +286,7 @@ jsonSchema2Pojo {
     useOptionalForGetters = false
 
     // properties to exclude from generated toString
-    toStringExcludes = ["someProperty"]
+    toStringExcludes = []
 
     // What Java version to target with generated source code (1.6, 1.8, 9, 11, etc).
     // By default, the version will be taken from the Gradle Java plugin's 'sourceCompatibility',

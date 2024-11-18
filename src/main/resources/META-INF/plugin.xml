@@ -10,6 +10,7 @@
     <depends optional="true" config-file="plugin-git.xml">Git4Idea</depends>
     <depends optional="true" config-file="plugin-maven.xml">org.jetbrains.idea.maven</depends>
     <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="plugin-sonarqube.xml">org.sonarlint.idea</depends>
 
     <extensionPoints>
         <extensionPoint name="configurationUpdater" interface="de.gebit.plugins.autoconfig.UpdateHandler" dynamic="true"/>
