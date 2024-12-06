@@ -2,7 +2,7 @@
     <id>de.gebit.plugins.autoconfig</id>
     <name>Autoconfig</name>
     <vendor email="jetbrains@gebit.de" url="https://github.com/GEBIT/autoconfig-intellij-plugin">GEBIT Solutions GmbH</vendor>
-    
+
     <idea-version since-build="232.1"/>
 
     <depends>com.intellij.modules.json</depends>
@@ -13,6 +13,7 @@
 
     <extensionPoints>
         <extensionPoint name="configurationUpdater" interface="de.gebit.plugins.autoconfig.UpdateHandler" dynamic="true"/>
+        <extensionPoint name="moduleConfigurationUpdater" interface="de.gebit.plugins.autoconfig.UpdateModuleHandler" dynamic="true"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -27,7 +28,8 @@
         <ProviderFactory implementation="de.gebit.plugins.autoconfig.json.ConfigurationJsonSchemeProviderFactory"/>
     </extensions>
     <extensions defaultExtensionNs="de.gebit.plugins.autoconfig">
-        <configurationUpdater implementation="de.gebit.plugins.autoconfig.handlers.CommonConfigurationHandler"/>
+        <configurationUpdater implementation="de.gebit.plugins.autoconfig.handlers.common.CommonConfigurationHandler"/>
+        <moduleConfigurationUpdater implementation="de.gebit.plugins.autoconfig.handlers.common.CommonModuleConfigurationHandler"/>
     </extensions>
     <actions>
         <group id="AutoconfigGroup" popup="true" text="Autoconfig">

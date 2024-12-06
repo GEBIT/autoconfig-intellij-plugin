@@ -5,8 +5,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import de.gebit.plugins.autoconfig.AutoconfigStartup;
-import de.gebit.plugins.autoconfig.ConfigurationLoaderService;
+import de.gebit.plugins.autoconfig.service.ConfigurationUpdaterService;
 import de.gebit.plugins.autoconfig.util.Notifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,16 +24,11 @@ public class RunAutoconfigAction extends DumbAwareAction {
 			return;
 		}
 
-		ConfigurationLoaderService configurationLoaderService = project.getService(ConfigurationLoaderService.class);
-		if (configurationLoaderService != null) {
-			configurationLoaderService.resetConfigurationCache();
-		}
-
 		// save currently open and unsaved config files
 		saveUnsavedAutoconfigs();
 
 		// perform changes
-		List<String> changedSettings = new AutoconfigStartup().runAutoconfig(project);
+		List<String> changedSettings = project.getService(ConfigurationUpdaterService.class).runAutoconfig();
 
 		// notify user if no changes were necessary
 		if (changedSettings == null || changedSettings.isEmpty()) {

@@ -6,7 +6,7 @@
 //  Berlin, Duesseldorf, Stuttgart, Leipzig (Germany)
 //  All rights reserved.
 
-package de.gebit.plugins.autoconfig.handlers;
+package de.gebit.plugins.autoconfig.handlers.common;
 
 import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptions;
 import com.intellij.codeInsight.actions.onSave.FormatOnSaveOptionsBase;
@@ -16,12 +16,14 @@ import com.intellij.externalDependencies.impl.ExternalDependenciesManagerImpl;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTrackerSettings;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.vcs.IssueNavigationConfiguration;
 import com.intellij.openapi.vcs.IssueNavigationLink;
 import de.gebit.plugins.autoconfig.UpdateHandler;
+import de.gebit.plugins.autoconfig.handlers.AbstractHandler;
 import de.gebit.plugins.autoconfig.model.Formatting;
 import de.gebit.plugins.autoconfig.model.GeneralConfiguration;
 import de.gebit.plugins.autoconfig.model.IssueNavigation;
@@ -129,14 +131,14 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 
 	private void applyProjectSDKOptions(ProjectSDK sdkOptions, Project project, List<String> updatedConfigs) {
 		if (sdkOptions != null) {
-			SdkType sdk = SdkType.findByName(sdkOptions.getType());
-			if (sdk != null) {
-				String projectSdk = JDKResolver.findProjectSdk(sdkOptions.getName(), project);
+			SdkType sdkType = SdkType.findByName(sdkOptions.getType());
+			if (sdkType != null) {
+				Sdk projectSdk = JDKResolver.findSdk(sdkOptions.getName(), project);
 				if (projectSdk != null) {
 					ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
-					applySetting(projectSdk, projectRootManager.getProjectSdkName(), sdkName -> WriteAction.runAndWait(
-									() -> projectRootManager.setProjectSdkName(sdkName, sdkOptions.getType())), updatedConfigs,
-							"Project SDK");
+					applySetting(projectSdk, projectRootManager.getProjectSdkName(),
+							sdkName -> WriteAction.runAndWait(() -> projectRootManager.setProjectSdk(projectSdk)),
+							updatedConfigs, "Project SDK");
 				}
 			} else {
 				Notifications.showWarning(
