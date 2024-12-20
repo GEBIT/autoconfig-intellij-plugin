@@ -17,7 +17,7 @@
     },
     "moduleSDK": {
       "type": "object",
-      "description": "The project SDK settings.",
+      "description": "The module SDK to be used.",
       "required": [
         "name",
         "type"
