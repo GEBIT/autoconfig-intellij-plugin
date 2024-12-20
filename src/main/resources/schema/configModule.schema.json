@@ -1,0 +1,37 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/config.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "General module configuration",
+  "type": "object",
+  "required": [
+    "moduleFilter"
+  ],
+  "properties": {
+    "moduleFilter": {
+      "type": "array",
+      "description": "List of modules/module regex patterns. Modules that match any of the names/patterns will be configured by this configuration.",
+      "items": {
+        "type": "string",
+        "description": "Module name/pattern"
+      }
+    },
+    "moduleSDK": {
+      "type": "object",
+      "description": "The module SDK to be used.",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The SDK name, e.g. a version or a distributor"
+        },
+        "type": {
+          "type": "string",
+          "description": "The SDK type, e.g. \"JavaSDK\", \"IDEA JDK\", \"KotlinSDK\" or \"Android SDK\"."
+        }
+      }
+    }
+  }
+}

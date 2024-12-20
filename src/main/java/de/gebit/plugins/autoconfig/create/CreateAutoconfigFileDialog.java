@@ -1,11 +1,15 @@
 package de.gebit.plugins.autoconfig.create;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.DialogWrapper;
-import de.gebit.plugins.autoconfig.AutoconfigStartup;
-import de.gebit.plugins.autoconfig.UpdateHandler;
+import de.gebit.plugins.autoconfig.UpdateSettings;
+import de.gebit.plugins.autoconfig.messages.AutoconfigBundle;
+import de.gebit.plugins.autoconfig.service.ConfigurationUpdaterService;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,21 +17,30 @@ import java.util.Optional;
  */
 public class CreateAutoconfigFileDialog extends DialogWrapper {
 
+	private final List<Module> moduleList;
 	private CreateAutoconfigFileForm autoconfigFileForm;
 
-	public CreateAutoconfigFileDialog() {
+	public CreateAutoconfigFileDialog(List<Module> moduleList) {
 		super(false);
+		this.moduleList = moduleList;
 		init();
-		setTitle("Create Autoconfig File");
+		setTitle(AutoconfigBundle.message("createautoconfigfile.title"));
 	}
 
 	@Override
 	protected @Nullable JComponent createCenterPanel() {
-		autoconfigFileForm = new CreateAutoconfigFileForm(AutoconfigStartup.EP_NAME.getExtensionList());
+		List<UpdateSettings<?>> settings = new ArrayList<>(
+				ConfigurationUpdaterService.PROJECT_EP_NAME.getExtensionList());
+		settings.addAll(ConfigurationUpdaterService.MODULE_EP_NAME.getExtensionList());
+		autoconfigFileForm = new CreateAutoconfigFileForm(settings, moduleList);
 		return autoconfigFileForm.getForm();
 	}
 
-	public Optional<UpdateHandler<?>> getSelectedHandler() {
-		return autoconfigFileForm.getSelectedHandler();
+	public Optional<UpdateSettings<?>> getSelectedSettings() {
+		return autoconfigFileForm.getSelectedSettings();
+	}
+
+	public Optional<Module> getSelectedModule() {
+		return autoconfigFileForm.getSelectedModule();
 	}
 }

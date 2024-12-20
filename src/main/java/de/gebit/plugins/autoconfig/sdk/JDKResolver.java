@@ -35,19 +35,19 @@ public class JDKResolver {
 		// nothing
 	}
 
-	public static String findProjectSdk(String sdkName, Project project) {
+	public static Sdk findSdk(String sdkName, Project project) {
 		if (sdkName == null) {
 			return null;
 		}
 		for (Sdk jdk : ProjectJdkTable.getInstance().getAllJdks()) {
 			if (jdk.getName().equals(sdkName)) {
-				return jdk.getName();
+				return jdk;
 			}
 		}
 
 		resolveMissingJDK(sdkName, project);
 
-		return sdkName;
+		return null;
 	}
 
 	/**

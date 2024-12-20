@@ -10,6 +10,7 @@ package de.gebit.plugins.autoconfig.handlers.maven;
 
 import com.intellij.conversion.impl.ConversionContextImpl;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import de.gebit.plugins.autoconfig.UpdateHandler;
 import de.gebit.plugins.autoconfig.handlers.AbstractHandler;
 import de.gebit.plugins.autoconfig.model.MavenConfiguration;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.gebit.plugins.autoconfig.sdk.JDKResolver.findProjectSdk;
+import static de.gebit.plugins.autoconfig.sdk.JDKResolver.findSdk;
 
 /**
  * Maven configuration update handler.
@@ -85,9 +86,11 @@ public class MavenHandler extends AbstractHandler implements UpdateHandler<Maven
 			applySetting(mavenImportingConfig.getVmOptions(), mavenImportingProjectSettings.getVmOptionsForImporter(),
 					mavenImportingProjectSettings::setVmOptionsForImporter, changedConfigs,
 					"VM options for maven importer");
-			applySetting(findProjectSdk(mavenImportingConfig.getJdk(), project),
-					mavenImportingProjectSettings.getJdkForImporter(), mavenImportingProjectSettings::setJdkForImporter,
-					changedConfigs, "JDK for importer");
+			Sdk sdk = findSdk(mavenImportingConfig.getJdk(), project);
+			if (sdk != null) {
+				applySetting(sdk.getName(), mavenImportingProjectSettings.getJdkForImporter(),
+						mavenImportingProjectSettings::setJdkForImporter, changedConfigs, "JDK for importer");
+			}
 		}
 
 		var mavenRunnerConfig = maven.getRunner();
@@ -95,8 +98,11 @@ public class MavenHandler extends AbstractHandler implements UpdateHandler<Maven
 			var mavenRunnerProjectSettings = MavenRunner.getInstance(project).getState();
 			applySetting(mavenRunnerConfig.getVmOptions(), mavenRunnerProjectSettings.getVmOptions(),
 					mavenRunnerProjectSettings::setVmOptions, changedConfigs, "VM options for maven runner");
-			applySetting(findProjectSdk(mavenRunnerConfig.getJre(), project), mavenRunnerProjectSettings.getJreName(),
-					mavenRunnerProjectSettings::setJreName, changedConfigs, "JRE for runner");
+			Sdk sdk = findSdk(mavenRunnerConfig.getJre(), project);
+			if (sdk != null) {
+				applySetting(sdk.getName(), mavenRunnerProjectSettings.getJreName(),
+						mavenRunnerProjectSettings::setJreName, changedConfigs, "JRE for runner");
+			}
 		}
 
 		return changedConfigs;

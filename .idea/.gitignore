@@ -6,3 +6,6 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+/checkstyle-idea.xml
+/git_toolbox_blame.xml
