@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NonNls;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Allow setting module SDK for a limited number of matching modules.
@@ -54,10 +55,6 @@ public class CommonModuleConfigurationHandler extends AbstractHandler implements
 		return matchesAnyName(module, configuration.getModuleFilter());
 	}
 
-	private static boolean matchesAnyName(Module module, List<String> patterns) {
-		return patterns.stream().anyMatch(p -> module.getName().matches(p));
-	}
-
 	@Override
 	public List<String> updateConfiguration(GeneralModuleConfiguration configuration, Module module) {
 		List<String> updatedConfigs = new ArrayList<>();
@@ -78,17 +75,12 @@ public class CommonModuleConfigurationHandler extends AbstractHandler implements
 					if (projectSdk != null && projectSdk.equals(moduleSdk)) {
 						// reset module SDK in case project SDK and designated module SDK are identical
 						if (!modifiableModel.isSdkInherited()) {
-							WriteAction.runAndWait(() -> {
-								modifiableModel.inheritSdk();
-								modifiableModel.commit();
-							});
+							commitModifiableModelChange(modifiableModel, ModifiableRootModel::inheritSdk);
 							updatedConfigs.add("Module SDK");
 						}
 					} else {
-						applySetting(moduleSdk, currentModuleSdk, s -> WriteAction.runAndWait(() -> {
-							modifiableModel.setSdk(s);
-							modifiableModel.commit();
-						}), updatedConfigs, "Module SDK");
+						applySetting(moduleSdk, currentModuleSdk, s -> commitModifiableModelChange(modifiableModel,
+								modifiableRootModel -> modifiableRootModel.setSdk(s)), updatedConfigs, "Module SDK");
 					}
 				}
 			} else {
@@ -97,5 +89,12 @@ public class CommonModuleConfigurationHandler extends AbstractHandler implements
 						module.getProject());
 			}
 		}
+	}
+
+	private void commitModifiableModelChange(ModifiableRootModel modifiableModel, Consumer<ModifiableRootModel> consumer) {
+		WriteAction.runAndWait(() -> {
+			consumer.accept(modifiableModel);
+			modifiableModel.commit();
+		});
 	}
 }

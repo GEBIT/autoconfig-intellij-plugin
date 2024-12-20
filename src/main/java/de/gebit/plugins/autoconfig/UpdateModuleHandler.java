@@ -36,4 +36,8 @@ public interface UpdateModuleHandler<T> extends UpdateSettings<T> {
 	default UpdateTarget getUpdateTarget() {
 		return UpdateTarget.MODULE;
 	}
+
+	default boolean matchesAnyName(Module module, List<String> patterns) {
+		return patterns.stream().anyMatch(p -> module.getName().matches(p));
+	}
 }

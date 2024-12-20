@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import de.gebit.plugins.autoconfig.AutoconfigStartup;
 import de.gebit.plugins.autoconfig.UpdateHandler;
 import de.gebit.plugins.autoconfig.UpdateModuleHandler;
+import de.gebit.plugins.autoconfig.util.Notifications;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,9 +102,19 @@ public final class ConfigurationUpdaterService {
 	private <T> List<String> processUpdateHandler(@NotNull Project project, UpdateHandler<T> updateHandler, ConfigurationLoaderService projectService, VirtualFile configDirectory) {
 		Optional<T> extensionConfiguration = projectService.getConfiguration(updateHandler.getConfigurationClass(),
 				updateHandler.getFileName(), configDirectory);
-		return extensionConfiguration.map(c -> updateHandler.updateConfiguration(c, project)).orElseGet(() -> {
+		final List<String> emptyList = Collections.emptyList();
+		return extensionConfiguration.map(c -> {
+			try {
+				return updateHandler.updateConfiguration(c, project);
+			} catch (Exception e) {
+				String errorMessage = "An error occurred trying to process configuration updates for \"" + updateHandler.getUpdaterName() + "\"";
+				LOG.error(errorMessage, e);
+				Notifications.showError(errorMessage, project);
+			}
+			return emptyList;
+		}).orElseGet(() -> {
 			LOG.info("No configuration for " + updateHandler.getUpdaterName() + " found.");
-			return Collections.emptyList();
+			return emptyList;
 		});
 	}
 

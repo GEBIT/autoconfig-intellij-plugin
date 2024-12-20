@@ -1,0 +1,23 @@
+{
+  "$id": "https://www.gebit.de/autoconfig-intellij-plugin/sonarqubeModule.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SonarQube configuration",
+  "type": "object",
+  "required": [
+    "moduleFilter"
+  ],
+  "properties": {
+    "moduleFilter": {
+      "type": "array",
+      "description": "List of modules/module regex patterns. Modules that match any of the names/patterns will be configured by this configuration.",
+      "items": {
+        "type": "string",
+        "description": "Module name/pattern"
+      }
+    },
+    "projectKey": {
+      "type": "string",
+      "description": "The SonarQube project key to use for all matching modules"
+    }
+  }
+}
