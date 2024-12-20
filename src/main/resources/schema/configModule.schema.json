@@ -9,7 +9,7 @@
   "properties": {
     "moduleFilter": {
       "type": "array",
-      "description": "List of modules/module patterns. Modules that match any of the names/patterns will be selected.",
+      "description": "List of modules/module regex patterns. Modules that match any of the names/patterns will be configured by this configuration.",
       "items": {
         "type": "string",
         "description": "Module name/pattern"
