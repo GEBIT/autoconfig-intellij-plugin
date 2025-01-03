@@ -136,7 +136,7 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 				Sdk projectSdk = JDKResolver.findSdk(sdkOptions.getName(), project);
 				if (projectSdk != null) {
 					ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
-					applySetting(projectSdk, projectRootManager.getProjectSdkName(),
+					applySetting(projectSdk, projectRootManager.getProjectSdk(),
 							sdkName -> WriteAction.runAndWait(() -> projectRootManager.setProjectSdk(projectSdk)),
 							updatedConfigs, "Project SDK");
 				}
