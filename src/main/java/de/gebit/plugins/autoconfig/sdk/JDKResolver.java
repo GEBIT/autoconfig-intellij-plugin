@@ -19,6 +19,7 @@ import com.intellij.openapi.projectRoots.impl.UnknownSdkSnapshot;
 import com.intellij.openapi.projectRoots.impl.UnknownSdkTracker;
 import com.intellij.openapi.roots.ui.configuration.UnknownSdk;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.util.ApplicationKt;
 import de.gebit.plugins.autoconfig.util.Notifications;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,7 +106,9 @@ public class JDKResolver {
 					final Notification fixableSdkError = sdkNotification.createNotification("Fixable missing JDK",
 							suggestedFixAction.getActionDetailedText(), NotificationType.WARNING);
 					fixableSdkError.addAction(DumbAwareAction.create(suggestedFixAction.getActionShortText(), evt -> {
-						suggestedFixAction.applySuggestionAsync(project);
+						// we have to execute this in a separate thread because they decided to use SwingUtilities#invokeLaterAndWait in the fix action
+						ApplicationKt.getApplication()
+								.executeOnPooledThread(() -> suggestedFixAction.applySuggestionAsync(project));
 						fixableSdkError.expire();
 						notification.expire();
 					}));
