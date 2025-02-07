@@ -19,18 +19,18 @@ import java.util.Collections;
 import java.util.function.Function;
 
 /**
- * Supplier for default file formats that should be formatted or used for optimization of imports. This only works when no manual state is persisted
- * in the users workspace.xml.
+ * Supplier for default file formats that should be formatted or used for optimization of imports. This only works when
+ * no manual state is persisted in the users workspace.xml.
  */
 public class FormatOnSaveOptionsDefaultsProvider implements FormatOnSaveOptionsBase.DefaultsProvider {
 
 	@Override
-	public @NotNull Collection<@NotNull FileType> getFileTypesFormattedOnSaveByDefault() {
+	public @NotNull Collection<FileType> getFileTypesFormattedOnSaveByDefault() {
 		return getFileTypes(TransientPluginState::formatFileTypes);
 	}
 
 	@Override
-	public @NotNull Collection<@NotNull FileType> getFileTypesWithOptimizeImportsOnSaveByDefault() {
+	public @NotNull Collection<FileType> getFileTypesWithOptimizeImportsOnSaveByDefault() {
 		return getFileTypes(TransientPluginState::organizeImportFileTypes);
 	}
 
