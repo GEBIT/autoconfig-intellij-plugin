@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.intellij" version "1.17.3"
+    id "org.jetbrains.intellij.platform" version "2.2.1"
     id "java"
     id "org.jsonschema2pojo" version "1.2.1"
 }
@@ -14,7 +14,6 @@ allprojects {
     ext {
         lombokVersion = '1.18.30'
         commonsIoVersion = '2.12.0'
-        intellijPluginVersion = '1.17.3'
         jakartaJwsVersion = '2.1.0'
         javaxPersistenceVersion = '2.2'
         jUnitJupiterVersion = '5.10.1'
@@ -24,60 +23,53 @@ allprojects {
     }
 }
 
-patchPluginXml {
-    version = findProperty("pluginVersion")
-    sinceBuild = "232.1"
-    // untilBuild = "242.*"
-    def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
-    pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
-    changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
-}
-
 tasks.register('printVersion') {
     doLast {
         println(rootProject.version)
     }
 }
 
-signPlugin {
-    certificateChain = System.getenv("CERTIFICATE_CHAIN")
-    privateKey = System.getenv("PRIVATE_KEY")
-    password = System.getenv("PRIVATE_KEY_PASSWORD")
-}
-
-publishPlugin {
-    token = System.getenv("PUBLISH_TOKEN")
-    setHidden(findProperty("hidden").toBoolean())
-    channels = findProperty("preRelease").toBoolean() ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
-}
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 // Must match Groovy version bundled with IntelliJ (see IJ/Contents/lib/groovy.jar/META-INF/org.codehaus.groovy.runtime.ExtensionModule)
 ext.groovyVersion = "3.0.19"
 
-intellij {
+intellijPlatform {
     // Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
-    version = System.getenv().getOrDefault("IJ_VERSION",
-            "2023.2"
-    )
-    pluginName = "AutoconfigPlugin"
-    downloadSources = true
-    updateSinceUntilBuild = false
-    instrumentCode = false
-    plugins = [
-            "java",
-            "Git4Idea",
-            "junit",
-            "org.jetbrains.plugins.yaml",
-            "org.jetbrains.idea.maven",
-            "org.sonarlint.idea:10.8.1.79205"
-    ]
+    version = System.getenv().getOrDefault("IJ_VERSION", "2023.2")
+    pluginConfiguration {
+        name = "AutoconfigPlugin"
+    }
+
+    patchPluginXml {
+        version = findProperty("pluginVersion")
+        sinceBuild = "232.1"
+        // untilBuild = "242.*"
+        def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
+        pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
+        changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
+    }
+
+    signPlugin {
+        certificateChain = System.getenv("CERTIFICATE_CHAIN")
+        privateKey = System.getenv("PRIVATE_KEY")
+        password = System.getenv("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishPlugin {
+        token = System.getenv("PUBLISH_TOKEN")
+        setHidden(findProperty("hidden").toBoolean())
+        channels = findProperty("preRelease").toBoolean() ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
+    }
 }
+
 buildSearchableOptions.enabled = false // Disable because it takes a long time and the plugin doesn't need it
-runIde.jbrVariant.set("jcef") // JVM with Java Chromium Embedded Framework because why not (see also https://github.com/JetBrains/gradle-intellij-plugin#running-dsl)
 
 dependencies {
     // Required if generating JSR-303 annotations
@@ -89,6 +81,11 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    intellijPlatform {
+        intellijIdeaCommunity intellijVersion
+        plugins(providers.gradleProperty("platformPlugins").map { List.of(it.split(',')) })
+        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { List.of(it.split(',')) })
+    }
 }
 
 jsonSchema2Pojo {
@@ -300,17 +297,6 @@ jsonSchema2Pojo {
     // Whether to use annotations from jakarta.validation package instead of javax.validation package
     // when adding JSR-303 annotations to generated Java types
     useJakartaValidation = false
-}
-
-sourceSets {
-    // Keep Groovy and Kotlin API source code in separate source sets, otherwise
-    // compilation fails because of inter-dependencies between Kotlin and Groovy files which confuse compiler,
-    // even though overall dependencies are unidirectional: pluginApiKotlin -> pluginApiGroovy -> main.
-
-    main {
-        java { srcDir "src/main" }
-        resources { srcDir "resources" }
-    }
 }
 
 compileJava {

@@ -19,7 +19,7 @@ public class AutoconfigBundle {
 		// no initialisation necessary
 	}
 
-	public static @NotNull @Nls String message(@NotNull @PropertyKey(resourceBundle = IDEA_ACTIONS_BUNDLE) String key, Object @NotNull ... params) {
+	public static @NotNull @Nls String message(@NotNull @PropertyKey(resourceBundle = IDEA_ACTIONS_BUNDLE) String key, Object... params) {
 		return INSTANCE.getMessage(key, params);
 	}
 }
