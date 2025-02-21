@@ -43,14 +43,21 @@ ext.groovyVersion = "3.0.19"
 intellijPlatform {
     // Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
     version = System.getenv().getOrDefault("IJ_VERSION", "2023.2")
+    
+    projectName = "AutoconfigPlugin"
+    
     pluginConfiguration {
-        name = "AutoconfigPlugin"
+        name = "Autoconfig"
+        
+        ideaVersion {
+            // null-provider to allow any until-version
+            untilBuild = provider { null }
+        }
     }
 
     patchPluginXml {
         version = findProperty("pluginVersion")
         sinceBuild = "232.1"
-        // untilBuild = "242.*"
         def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
         pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
         changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
