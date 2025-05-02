@@ -1,7 +1,6 @@
 package de.gebit.plugins.autoconfig.actions;
 
 import com.intellij.ide.IdeView;
-import com.intellij.ide.actions.CreateInDirectoryActionBase;
 import com.intellij.ide.actions.OpenFileAction;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -13,6 +12,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * An action to create/open an Autoconfig file for a specific handler/plugin
  */
-public class CreateAutoconfigFileAction extends CreateInDirectoryActionBase {
+public class CreateAutoconfigFileAction extends DumbAwareAction {
 	private static final @NotNull Logger LOGGER = Logger.getInstance(CreateAutoconfigFileAction.class);
 
 	@Override
@@ -85,7 +85,7 @@ public class CreateAutoconfigFileAction extends CreateInDirectoryActionBase {
 				// now=false because otherwise it might get executed before other IDE actions are done,
 				// which would result in it losing its focus right away
 				actionManager.tryToExecute(codeCompletion, null, null, null, false);
-			}, () -> LOGGER.error("Unable to create autoconfig file: ", updateSettings.getFileName()));
+			}, () -> LOGGER.error("Unable to create autoconfig file: " + updateSettings.getFileName()));
 		}
 	}
 }

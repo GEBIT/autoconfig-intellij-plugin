@@ -1,7 +1,10 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     id "org.jetbrains.intellij.platform" version "2.2.1"
     id "java"
     id "org.jsonschema2pojo" version "1.2.1"
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
 }
 
 group = findProperty("pluginGroup")
@@ -9,7 +12,7 @@ version = findProperty("pluginVersion")
 
 allprojects {
 
-    group 'de.gebit.plugins.autoconfig'
+    group findProperty("pluginGroup")
 
     ext {
         lombokVersion = '1.18.30'
@@ -18,8 +21,10 @@ allprojects {
         javaxPersistenceVersion = '2.2'
         jUnitJupiterVersion = '5.10.1'
         intellijType = 'IC' // IC: Community Edition, IU: Ultimate Edition.
-        intellijVersion = '2023.2' // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+        intellijVersion = '2023.2.6' // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
         intellijSinceBuild = '232.10300.40'
+        // Must match Groovy version bundled with IntelliJ (see IJ/Contents/lib/groovy.jar/META-INF/org.codehaus.groovy.runtime.ExtensionModule)
+        groovyVersion = "3.0.19"
     }
 }
 
@@ -37,18 +42,15 @@ repositories {
     }
 }
 
-// Must match Groovy version bundled with IntelliJ (see IJ/Contents/lib/groovy.jar/META-INF/org.codehaus.groovy.runtime.ExtensionModule)
-ext.groovyVersion = "3.0.19"
-
 intellijPlatform {
     // Available IDE versions: https://www.jetbrains.com/intellij-repository/releases and https://www.jetbrains.com/intellij-repository/snapshots
-    version = System.getenv().getOrDefault("IJ_VERSION", "2023.2")
-    
+    version = System.getenv().getOrDefault("IJ_VERSION", "2023.2.6")
+
     projectName = "AutoconfigPlugin"
-    
+
     pluginConfiguration {
         name = "Autoconfig"
-        
+
         ideaVersion {
             // null-provider to allow any until-version
             untilBuild = provider { null }
@@ -57,10 +59,33 @@ intellijPlatform {
 
     patchPluginXml {
         version = findProperty("pluginVersion")
-        sinceBuild = "232.1"
+        sinceBuild = intellijSinceBuild
         def bodyMatcher = /(?s)(?<=<body>).*(?=<\/body>)/
         pluginDescription = new File("metadata/description.html").text.findAll(bodyMatcher)?[0]
         changeNotes = new File("metadata/changelog.html").text.findAll(bodyMatcher)?[0]
+    }
+
+    sourceSets {
+        integrationTest {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
+    }
+
+    configurations {
+        integrationTestImplementation.extendsFrom testImplementation
+    }
+
+    task integrationTest(type: Test) {
+        description = "Run integration tests (located in src/intTest/...)."
+        testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
+        classpath = project.sourceSets.integrationTest.runtimeClasspath
+        systemProperty ("path.to.build.plugin", tasks.buildPlugin.archiveFile.get().asFile.absolutePath)
+        useJUnitPlatform()
+        dependsOn(tasks.prepareSandbox)
+        testLogging {
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+        }
     }
 
     signPlugin {
@@ -74,11 +99,8 @@ intellijPlatform {
         setHidden(findProperty("hidden").toBoolean())
         channels = findProperty("preRelease").toBoolean() ? ["autoconfig-beta"] : ["default", "autoconfig-beta"]
     }
-}
 
-buildSearchableOptions.enabled = false // Disable because it takes a long time and the plugin doesn't need it
-
-dependencies {
+    dependencies {
     // Required if generating JSR-303 annotations
     implementation 'javax.validation:validation-api:1.1.0.CR2'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
@@ -90,10 +112,20 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     intellijPlatform {
         intellijIdeaCommunity intellijVersion
+        testFramework(TestFrameworkType.Starter.INSTANCE, '243.23654.153')
         plugins(providers.gradleProperty("platformPlugins").map { List.of(it.split(',')) })
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { List.of(it.split(',')) })
+            instrumentationTools()
+        }
+        testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+
+        integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+        integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.20.2")
+        integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
     }
 }
+
+buildSearchableOptions.enabled = false // Disable because it takes a long time and the plugin doesn't need it
 
 jsonSchema2Pojo {
 
@@ -309,4 +341,14 @@ jsonSchema2Pojo {
 compileJava {
     sourceCompatibility = "17"
     targetCompatibility = "17"
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+configurations {
+    implementation.exclude(group: 'io.ktor')
+    implementation.exclude(group: 'com.jetbrains.infra')
+    implementation.exclude(group: 'com.jetbrains.intellij.remoteDev')
 }

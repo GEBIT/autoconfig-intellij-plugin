@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "feature/*" ]
+  schedule:
+    - cron: "0 0 * * *"
   pull_request:
 
 jobs:
@@ -18,8 +20,10 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: adopt-hotspot
-      - name: Run Gradle Check # also ensures gradle is downloaded
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run Gradle Check
         run: |
           chmod +x gradlew
           ./gradlew check
@@ -28,7 +32,20 @@ jobs:
         shell: bash
         run: echo "version=$(./gradlew printVersion --console=plain -q)" >> $GITHUB_OUTPUT
       - name: Build plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin integrationTest
+      - name: Store reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+      - name: Upload IDE test logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: '**/out/ide-tests/tests/**/log'
       - name: Unpack unsigned plugin for repackaging
         shell: bash
         run: |

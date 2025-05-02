@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: echo "preRelease=${{ github.event.release.prerelease}}" >> $GITHUB_OUTPUT
       - name: Build plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin integrationTest
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
       - name: Sign and publish plugin

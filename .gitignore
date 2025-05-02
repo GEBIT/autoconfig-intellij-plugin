@@ -5,6 +5,8 @@
 
 **/target/*
 
+### UI Tests
+allure-results
 
 ### IntelliJ
 # User-specific stuff
@@ -21,6 +23,7 @@
 **/.idea/sonarlint
 **/.idea/sqldialects.xml
 **/.idea/git_toolbox_prj.xml
+**/.idea/kotlinc.xml
 
 
 # Generated files

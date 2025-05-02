@@ -1,5 +1,7 @@
 # Autoconfig for Jetbrains IDEs
 
+[![Build](https://github.com/GEBIT/autoconfig-intellij-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/GEBIT/autoconfig-intellij-plugin/actions/workflows/build.yml)
+
 Autoconfig is an extension for IntelliJ IDEA and other Jetbrains IDEs that enables persistence and sharing of project specific IDE-settings outside the `workspace.xml`-file.
 
 ## Goal
