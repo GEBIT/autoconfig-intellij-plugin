@@ -22,8 +22,10 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.vcs.IssueNavigationConfiguration;
 import com.intellij.openapi.vcs.IssueNavigationLink;
+import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
 import de.gebit.plugins.autoconfig.UpdateHandler;
 import de.gebit.plugins.autoconfig.handlers.AbstractHandler;
+import de.gebit.plugins.autoconfig.model.Encodings;
 import de.gebit.plugins.autoconfig.model.Formatting;
 import de.gebit.plugins.autoconfig.model.GeneralConfiguration;
 import de.gebit.plugins.autoconfig.model.IssueNavigation;
@@ -36,9 +38,12 @@ import de.gebit.plugins.autoconfig.util.Notifications;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The main class used to update the IntelliJ configuration. All supported options are checked, updated and logged in a
@@ -79,6 +84,7 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 		applyOnSaveOptions(options.getOnSave(), project, updatedConfigs);
 		applyReloadConfiguration(options.getReloadProjectAutomatically(), project, updatedConfigs);
 		applyProjectSDKOptions(options.getProjectSDK(), project, updatedConfigs);
+		applyEncodingOptions(options.getEncodings(), project, updatedConfigs);
 		return updatedConfigs;
 	}
 
@@ -183,5 +189,32 @@ public class CommonConfigurationHandler extends AbstractHandler implements Updat
 				dependenciesManagerImpl.loadState(state);
 			}
 		}
+	}
+
+	private void applyEncodingOptions(Encodings encodings, Project project, List<String> updatedConfigs) {
+		if (encodings != null) {
+			EncodingProjectManager encodingManager = EncodingProjectManager.getInstance(project);
+			resolveCharset(encodings.getProjectEncoding(), project).ifPresent(
+					encoding -> applySetting(encoding.name(), encodingManager.getDefaultCharset().name(),
+							encodingManager::setDefaultCharsetName, updatedConfigs, "Project encoding"));
+			resolveCharset(encodings.getDefaultPropertyFileEncoding(), project).ifPresent(encoding -> {
+				Charset defaultCharsetForPropertiesFiles = encodingManager.getDefaultCharsetForPropertiesFiles(null);
+				applySetting(encoding, defaultCharsetForPropertiesFiles,
+						charset -> encodingManager.setDefaultCharsetForPropertiesFiles(null, charset), updatedConfigs,
+						"Default property file encoding");
+			});
+		}
+	}
+
+	private Optional<Charset> resolveCharset(String charsetName, Project project) {
+		if (charsetName != null) {
+			try {
+				return Optional.of(Charset.forName(charsetName));
+			} catch (UnsupportedCharsetException e) {
+				Notifications.showWarning(
+						"Charset name \"" + charsetName + "\" has not been found for auto configuration", project);
+			}
+		}
+		return Optional.empty();
 	}
 }

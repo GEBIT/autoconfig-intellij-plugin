@@ -111,6 +111,20 @@
           "description": "The SDK type, e.g. \"JavaSDK\", \"IDEA JDK\", \"KotlinSDK\" or \"Android SDK\"."
         }
       }
+    },
+    "encodings": {
+      "type": "object",
+      "description": "File encoding settings",
+      "properties": {
+        "projectEncoding": {
+          "type": "string",
+          "description": "Project encoding"
+        },
+        "defaultPropertyFileEncoding": {
+          "type": "string",
+          "description": "Default encoding for properties files"
+        }
+      }
     }
   }
 }
