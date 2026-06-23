@@ -1,10 +1,12 @@
 package de.gebit.plugins.autoconfig.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import de.gebit.plugins.autoconfig.refresh.AutoconfigFloatingToolbarProvider;
 import de.gebit.plugins.autoconfig.service.ConfigurationUpdaterService;
 import de.gebit.plugins.autoconfig.util.Notifications;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,8 @@ public class RunAutoconfigAction extends DumbAwareAction {
 		// perform changes
 		List<String> changedSettings = project.getService(ConfigurationUpdaterService.class).runAutoconfig();
 
+		clearToolbars();
+
 		// notify user if no changes were necessary
 		if (changedSettings == null || changedSettings.isEmpty()) {
 			Notifications.showInfo("No settings have been changed.", project);
@@ -50,5 +54,13 @@ public class RunAutoconfigAction extends DumbAwareAction {
 		String[] components = document.getUrl().split("/");
 		String lastComponent = components[components.length - 1];
 		return lastComponent.startsWith("autoconfig") && lastComponent.endsWith(".yaml");
+	}
+
+	private void clearToolbars() {
+		AutoconfigFloatingToolbarProvider provider = ExtensionPointName.create(
+				"com.intellij.editorFloatingToolbarProvider").findExtension(AutoconfigFloatingToolbarProvider.class);
+		if (provider != null) {
+			provider.clearToolbars();
+		}
 	}
 }
