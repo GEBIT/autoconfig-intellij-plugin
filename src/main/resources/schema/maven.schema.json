@@ -60,6 +60,30 @@
         "jre": {
           "type": "string",
           "description": "The JRE (name) to use for importing, e.g. 17."
+        },
+        "environmentVariables": {
+          "type": "object",
+          "description": "The environment variables to use for maven runner.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "delegateBuildToMaven": {
+          "type": "boolean",
+          "description": "Whether to delegate build and run actions to maven runner.",
+          "default": false
+        },
+        "mavenProperties": {
+          "type": "object",
+          "description": "The maven properties to use for maven runner.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "skipTests": {
+          "type": "boolean",
+          "description": "Whether to skip tests during maven runner execution.",
+          "default": false
         }
       }
     }

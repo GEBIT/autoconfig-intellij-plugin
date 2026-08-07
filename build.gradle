@@ -111,7 +111,7 @@ jsonSchema2Pojo {
     // Whether to allow 'additional' properties to be supported in classes by adding a map to
     // hold these. This is true by default, meaning that the schema rule 'additionalProperties'
     // controls whether the map is added. Set this to false to globally disable additional properties.
-    includeAdditionalProperties = false
+    includeAdditionalProperties = true
 
     // Whether to include a javax.annotation.Generated (Java 8 and lower) or
     // javax.annotation.processing.Generated (Java 9+) in on generated types (default true).
