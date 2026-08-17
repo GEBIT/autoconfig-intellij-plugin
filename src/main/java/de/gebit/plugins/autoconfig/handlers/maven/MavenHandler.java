@@ -21,6 +21,7 @@ import org.jetbrains.idea.maven.project.MavenProjectsManager;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static de.gebit.plugins.autoconfig.sdk.JDKResolver.findSdk;
 
@@ -101,11 +102,35 @@ public class MavenHandler extends AbstractHandler implements UpdateHandler<Maven
 			Sdk sdk = findSdk(mavenRunnerConfig.getJre(), project);
 			if (sdk != null) {
 				applySetting(sdk.getName(), mavenRunnerProjectSettings.getJreName(),
-						mavenRunnerProjectSettings::setJreName, changedConfigs, "JRE for runner");
+						mavenRunnerProjectSettings::setJreName, changedConfigs, "JRE for maven runner");
 			}
+			applySetting(mavenRunnerConfig.getDelegateBuildToMaven(),
+					mavenRunnerProjectSettings.isDelegateBuildToMaven(),
+					mavenRunnerProjectSettings::setDelegateBuildToMaven, changedConfigs,
+					"Delegate IDE build/run to maven runner");
+			var environmentVariables = mavenRunnerConfig.getEnvironmentVariables();
+			if (environmentVariables != null) {
+				applySetting(environmentVariables.getAdditionalProperties(),
+						mavenRunnerProjectSettings.getEnvironmentProperties(),
+						mavenRunnerProjectSettings::setEnvironmentProperties, this::haveEqualMapContents,
+						changedConfigs, "Environment variables for maven runner");
+			}
+			var mavenProperties = mavenRunnerConfig.getMavenProperties();
+			if (mavenProperties != null) {
+				applySetting(mavenProperties.getAdditionalProperties(), mavenRunnerProjectSettings.getMavenProperties(),
+						mavenRunnerProjectSettings::setMavenProperties, this::haveEqualMapContents, changedConfigs,
+						"Maven properties for maven runner");
+			}
+			applySetting(mavenRunnerConfig.getSkipTests(), mavenRunnerProjectSettings.isSkipTests(),
+					mavenRunnerProjectSettings::setSkipTests, changedConfigs, "Skip tests for maven runner");
 		}
 
 		return changedConfigs;
+	}
+
+	private boolean haveEqualMapContents(Object newValue, Object originalValue) {
+		return newValue instanceof Map<?, ?> newMap && originalValue instanceof Map<?, ?> originalMap && newMap.entrySet()
+				.equals(originalMap.entrySet());
 	}
 
 	private String getMavenHome(Boolean useMavenWrapperConfig) {
